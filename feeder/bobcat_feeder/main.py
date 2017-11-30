@@ -26,7 +26,7 @@ async def run():
         rawGpsData = connection.recv(4096)
         data = get_mqtt_data(rawGpsData)        
         connection.close()
-        await send_realtime(mqtt, "127.0.0.1", data)
+        await send_realtime(mqtt, "mqtt://127.0.0.1", data)
         await asyncio.sleep(5)
 
 def get_gps_data(data: bytes):    
