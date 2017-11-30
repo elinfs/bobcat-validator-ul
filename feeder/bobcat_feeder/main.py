@@ -71,6 +71,7 @@ async def send_realtime(mqtt ,server: str, data: Dict):
     
     ret = await mqtt.connect(server)
     logging.debug("MQTT connect to {} -> {}".format(server, ret))
+    pprint.pprint(data)
     for topic, msg in data.items():
         ret = await mqtt.publish(topic, msg.encode())
         logging.debug("Published to MQTT topic {} -> {}".format(topic, ret))
