@@ -15,10 +15,12 @@ def main():
     asyncio.get_event_loop().run_until_complete(run())
 
 async def run():
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.1.3', 10110))
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(('localhost', 10110))
+    serversocket.listen(5) # become a server socket, maximum 5 connections
     while true:
-        rawGpsData = client_socket.recv(4096)
+        connection, address = serversocket.accept()
+        rawGpsData = connection.recv(4096)
         data = get_mqtt_data(rawGpsData)        
         
         await send_realtime("127.0.0.1", data)
