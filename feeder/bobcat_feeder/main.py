@@ -28,10 +28,11 @@ async def run():
         await send_realtime("127.0.0.1", data)
         await asyncio.sleep(5)
 
-def get_gps_data(data: str):
-    print(data)
-    data = data[data.find('$GPRMC'):]
-    strArr = data.split('\\')
+def get_gps_data(data: bytes):    
+    datastring = str(data)
+    print(datastring)
+    datastring = datastring[datastring.index('$GPRMC'):]
+    strArr = datastring.split('\\')
     print(strArr[0])
     return strData[0]
 
