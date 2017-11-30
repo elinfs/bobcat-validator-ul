@@ -16,10 +16,12 @@ def main():
 
 async def run():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serversocket.bind(('localhost', 10110))
+    serversocket.bind(('192.168.1.3', 10110))
     serversocket.listen(5) # become a server socket, maximum 5 connections
     while True:
+        print('loop')
         connection, address = serversocket.accept()
+        print(address)
         rawGpsData = connection.recv(4096)
         data = get_mqtt_data(rawGpsData)        
         
@@ -27,6 +29,7 @@ async def run():
         await asyncio.sleep(5)
 
 def get_gps_data(data: str):
+    print(data)
     data = data[data.find('$GPRMC'):]
     strArr = data.split('\\')
     print(strArr[0])
