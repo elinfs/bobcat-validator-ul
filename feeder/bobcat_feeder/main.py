@@ -42,7 +42,7 @@ def get_mqtt_data(rawGps: str):
     data['/service/v1/gps/rmc'] = get_gps_data(rawGps)
 
     time = {
-            'iso8601': datetime.utcnow()
+            'iso8601': datetime.datetime.utcnow()
     }
 
     data["/service/v1/Validate/time"] = json.dumps(time)
