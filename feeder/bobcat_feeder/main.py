@@ -16,7 +16,7 @@ def main():
 
 async def run():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('127.0.0.1', 10110))
+    client_socket.connect(('192.168.1.3', 10110))
     while true:
         rawGpsData = client_socket.recv(4096)
         data = get_mqtt_data(rawGpsData)        
