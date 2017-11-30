@@ -15,6 +15,7 @@ def main():
     asyncio.get_event_loop().run_until_complete(run())
 
 async def run():
+    mqtt = MQTTClient()
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(('192.168.1.3', 10110))
     serversocket.listen(5) # become a server socket, maximum 5 connections
@@ -24,15 +25,15 @@ async def run():
         print(address)
         rawGpsData = connection.recv(4096)
         data = get_mqtt_data(rawGpsData)        
-        
-        await send_realtime("127.0.0.1", data)
+        connection.close()
+        await send_realtime(mqtt, "127.0.0.1", data)
         await asyncio.sleep(5)
 
 def get_gps_data(data: bytes):    
     datastring = str(data)
     print(datastring)
-    datastring = datastring[datastring.index('$GPRMC'):]
-    strArr = datastring.split('\\')
+    datastring = datastring[datastring.find('$GPRMC'):]
+    strArr = datastring.split('\\r\\n')
     print(strArr[0])
     return strArr[0]
 
@@ -66,8 +67,8 @@ def get_mqtt_data(rawGps: str):
     data["/service/v1/nextStop"] = json.dumps(next)        
 
 
-async def send_realtime(server: str, data: Dict):
-    mqtt = MQTTClient()
+async def send_realtime(mqtt: mqtt = hbmqtt.client ,server: str, data: Dict):
+    
     ret = await mqtt.connect(server)
     logging.debug("MQTT connect to {} -> {}".format(server, ret))
     for topic, msg in data.items():
