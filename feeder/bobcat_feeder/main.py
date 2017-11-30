@@ -18,7 +18,7 @@ async def run():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(('localhost', 10110))
     serversocket.listen(5) # become a server socket, maximum 5 connections
-    while true:
+    while True:
         connection, address = serversocket.accept()
         rawGpsData = connection.recv(4096)
         data = get_mqtt_data(rawGpsData)        
