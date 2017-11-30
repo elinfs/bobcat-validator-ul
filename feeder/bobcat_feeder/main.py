@@ -34,7 +34,7 @@ def get_gps_data(data: bytes):
     datastring = datastring[datastring.index('$GPRMC'):]
     strArr = datastring.split('\\')
     print(strArr[0])
-    return strData[0]
+    return strArr[0]
 
 def get_mqtt_data(rawGps: str):
     data = {}
