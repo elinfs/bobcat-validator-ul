@@ -67,7 +67,7 @@ def get_mqtt_data(rawGps: str):
     data["/service/v1/nextStop"] = json.dumps(next)        
 
 
-async def send_realtime(mqtt: mqtt = hbmqtt.client ,server: str, data: Dict):
+async def send_realtime(mqtt: hbmqtt.client ,server: str, data: Dict):
     
     ret = await mqtt.connect(server)
     logging.debug("MQTT connect to {} -> {}".format(server, ret))
