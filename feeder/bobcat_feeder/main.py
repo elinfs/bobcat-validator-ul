@@ -66,6 +66,7 @@ def get_mqtt_data(rawGps: str):
 
     data["/service/v1/nextStop"] = json.dumps(next)        
 
+    return data
 
 async def send_realtime(mqtt, server: str, data: Dict):
     
