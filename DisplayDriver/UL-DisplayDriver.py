@@ -21,7 +21,7 @@ from .display_device import DisplayDevice
 RESOLUTION = WIDTH, HEIGHT = 480, 272
 MARGIN = 14
 
-COLOUR_GRAY = 241, 200, 0 #83, 86, 90
+COLOUR_GRAY = 83, 86, 90
 COLOUR_BLACK = 0, 0, 0
 COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
@@ -83,8 +83,7 @@ class DisplayGeneric(Display):
                 flags = flags | pygame.FULLSCREEN
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
-            self.status_surface = pygame.Surface((480, 62))
-            self.timestamp_surface = pygame.Surface((200, 20))
+            self.header_surface = pygame.Surface((480, 62))      
             if not hasattr(self, 'title'):
                 self.title = "Bobcat Validator"
             self.set_background()
@@ -105,21 +104,14 @@ class DisplayGeneric(Display):
             if self.status_ready != self.device.ready:
                 self.idle(None)
             else:
-                self.screen.blit(self.status_surface, (0, 0))
+                self.screen.blit(self.header_surface, (0, 0))
                 self.update_timestamp()
                 pygame.display.update()
                 pygame.event.pump()
 
     def update_timestamp(self) -> None:
         """Update time on display"""
-        timestamp = self.device.dispatcher.realtime.time.astimezone(self.tz).strftime("%Y-%m-%d %H:%M")
-        config_time = self.config.get("time", {})
-        font = pygame.font.SysFont(config_time.get("font", DEFAULT_FONT), config_time.get("size", 20))
-        size = font.size(timestamp)
-        ren = font.render(timestamp, True, COLOUR_BLACK)
-        self.timestamp_surface.fill(COLOUR_WHITE)
-        self.timestamp_surface.blit(ren, (0, 0))
-        self.screen.blit(self.timestamp_surface, (WIDTH - MARGIN - size[0], 60))
+
 
     def set_background(self) -> None:
         """Setup background"""
@@ -127,11 +119,14 @@ class DisplayGeneric(Display):
         # fill background
         self.screen.fill(COLOUR_GRAY)
 
+        #fill header
+        self.header_surface.fill(COLOUR_YELLOW)      
+
         # add logo
         logo_filename = DEFAULT_LOGO
         logo_surface = pygame.image.load(logo_filename).convert_alpha()
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
-        self.screen.blit(logo_surface, (MARGIN, MARGIN))
+        self.header_surface.blit(logo_surface, (MARGIN, MARGIN))
 
         # add title
         config_title = self.config.get("title", {})
@@ -147,19 +142,19 @@ class DisplayGeneric(Display):
         config_status = self.config.get("status", {})
         font = pygame.font.SysFont(config_status.get("font", DEFAULT_FONT), config_status.get("size", 20))
         font_height = font.get_height() + font.get_ascent() + font.get_descent()
-        max_lines = self.status_surface.get_height() / (font_height + self.spacing)
+        max_lines = self.header_surface.get_height() / (font_height + self.spacing)
         no_lines = len(lines)
         if no_lines > max_lines:
             no_lines = max_lines
-        y_step = self.status_surface.get_height() / no_lines
+        y_step = self.header_surface.get_height() / no_lines
         y_base = 0
         for text in lines:
             translated = translation.gettext(text)
             size = font.size(translated)
             ren = font.render(translated, True, COLOUR_BLACK)
-            pos_x = int((self.status_surface.get_width() - size[0]) / 2)
+            pos_x = int((self.header_surface.get_width() - size[0]) / 2)
             pos_y = int(y_base + (y_step - size[1]) / 2)
-            self.status_surface.blit(ren, (pos_x, pos_y))
+            self.header_surface.blit(ren, (pos_x, pos_y))
             y_base += y_step
 
     def idle(self, last_result: MtbValidateResult)-> None:
@@ -167,10 +162,9 @@ class DisplayGeneric(Display):
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
             if self.status_ready:
-                self.status_surface.fill(COLOUR_YELLOW)
+                
                 self.text_status([self.idle_text, MSG("SHOW_TICKET")])
-            else:
-                self.status_surface.fill(COLOUR_RED)
+            else:                
                 self.text_status([self.idle_text, MSG("NOT_READY")])
             self.show()
 
