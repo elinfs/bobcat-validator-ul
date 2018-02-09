@@ -137,11 +137,9 @@ class DisplayGeneric(Display):
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
-            if self.status_ready:
-                self.header_surface.fill(COLOUR_WHITE)
+            if self.status_ready:                
                 self.text_status([self.idle_text, MSG("SHOW_TICKET")])
-            else:
-                self.header_surface.fill(COLOUR_RED)
+            else:                
                 self.text_status([self.idle_text, MSG("NOT_READY")])
             self.show()
 
@@ -167,15 +165,12 @@ class DisplayGeneric(Display):
                             product_name.append(pn)
                     if not product_name:
                         product_name.append(MSG("UNKNOWN_PRODUCT"))
-            if res == ValidateResult.success:
-                self.header_surface.fill(COLOUR_GREEN)
+            if res == ValidateResult.success:                
                 msg = [MSG("SUCCESS")]
 
-            elif graced:
-                self.header_surface.fill(COLOUR_ORANGE)
+            elif graced:                
                 msg = [MSG("GRACED")]
-            else:
-                self.header_surface.fill(COLOUR_RED)
+            else:                
                 msg = [MSG("FAILED")]
             if reason:
                 msg.append(reason)
