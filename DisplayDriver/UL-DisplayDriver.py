@@ -78,7 +78,7 @@ class DisplayGeneric(Display):
                 flags = flags | pygame.FULLSCREEN
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
-            self.header_surface = pygame.Surface((440, 62))            
+            self.header_surface = pygame.Surface((480, 62))            
             if not hasattr(self, 'title'):
                 self.title = "Bobcat Validator"
             self.set_background()
@@ -120,7 +120,7 @@ class DisplayGeneric(Display):
         logo_filename = DEFAULT_LOGO
         logo_surface = pygame.image.load(logo_filename).convert_alpha()
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
-        self.screen.blit(logo_surface, (MARGIN, MARGIN))
+        self.header_surface.blit(logo_surface, (MARGIN, MARGIN))
 
         # add title
         config_title = self.config.get("title", {})
