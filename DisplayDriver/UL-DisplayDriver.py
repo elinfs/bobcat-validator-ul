@@ -144,7 +144,7 @@ class DisplayGeneric(Display):
         subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
         subsize = subfont.size(t2)
         subren = subfont.render(t2, True, COLOUR_WHITE)
-        self.status_surface.blit(ren, (50, 50 + font_height))
+        self.status_surface.blit(subren, (50, font_height))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
