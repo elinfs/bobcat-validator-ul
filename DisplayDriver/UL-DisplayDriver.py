@@ -22,6 +22,7 @@ RESOLUTION = WIDTH, HEIGHT = 480, 272
 MARGIN = 14
 
 COLOUR_GRAY = 83, 86, 90
+COLOUR_BLACK = 0, 0, 0
 COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
 COLOUR_RED = 231, 67, 42
@@ -195,15 +196,12 @@ class DisplayGeneric(Display):
                             product_name.append(pn)
                     if not product_name:
                         product_name.append(MSG("UNKNOWN_PRODUCT"))
-            if res == ValidateResult.success:
-                self.status_surface.fill(COLOUR_GREEN)
+            if res == ValidateResult.success:                
                 msg = [MSG("SUCCESS")]
 
-            elif graced:
-                self.status_surface.fill(COLOUR_ORANGE)
+            elif graced:                
                 msg = [MSG("GRACED")]
-            else:
-                self.status_surface.fill(COLOUR_RED)
+            else:                
                 msg = [MSG("FAILED")]
             if reason:
                 msg.append(reason)
