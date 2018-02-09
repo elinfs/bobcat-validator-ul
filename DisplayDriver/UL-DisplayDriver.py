@@ -166,9 +166,9 @@ class DisplayGeneric(Display):
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
             if self.status_ready:                
-                # self.text_status([self.idle_text, MSG("SHOW_TICKET")])
+                self.text_status([self.idle_text, MSG("SHOW_TICKET")])
             else:                
-                # self.text_status([self.idle_text, MSG("NOT_READY")])
+                self.text_status([self.idle_text, MSG("NOT_READY")])
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
