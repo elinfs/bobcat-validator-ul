@@ -27,7 +27,7 @@ COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
 COLOUR_RED = 231, 67, 42
 
-DEFAULT_FONT = "Roboto-Bold"
+DEFAULT_FONT = "Roboto Bold"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 
 SOUND_FAILED = "failed"
@@ -69,7 +69,11 @@ class DisplayGeneric(Display):
         validate_config_schema(config, "display_generic")
         self.domain = device.dispatcher.domain
         self.translation = device.dispatcher.translation
-
+        environment = config.get('environment')
+        if environment is not None:
+            for key, value in environment.items():
+                logging.info("setenv %s=%s", key, value)
+                os.environ[key] = value
         logging.debug("Initializing graphics & sound")
         pygame.init()
         if config.get('screen', True):
@@ -80,7 +84,7 @@ class DisplayGeneric(Display):
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
             self.header_surface = pygame.Surface((480, 62))      
-            self.msg_surface = pygame.Surface((480, 210))      
+            self.msg_surface = pygame.Surface((480, 200))      
             self.set_background()
             self.idle_text = ""
             self.title = ""
@@ -130,7 +134,7 @@ class DisplayGeneric(Display):
         self.header_surface.blit(logo_surface, (MARGIN, MARGIN))
 
         # add msg        
-        font = pygame.font.SysFont(DEFAULT_FONT,  36)
+        font = pygame.font.SysFont(config_status.get("font", DEFAULT_FONT), config_status.get("size", 36))
         size = font.size(self.title)
         ren = font.render(self.title, True, COLOUR_YELLOW)
         self.msg_surface.blit(ren, (WIDTH - MARGIN - size[0], 30))
@@ -139,30 +143,29 @@ class DisplayGeneric(Display):
         """Set display status text"""
         if translation is None:
             translation = self.translation
-
-        font = pygame.font.SysFont(DEFAULT_FONT,  20)
-        font_height = font.get_height() + font.get_ascent() + font.get_descent()
-        max_lines = self.msg_surface.get_height() / (font_height + self.spacing)
-        no_lines = len(lines)
-        if no_lines > max_lines:
-            no_lines = max_lines
-        y_step = self.msg_surface.get_height() / no_lines
-        y_base = 0
-        for text in lines:
-            translated = translation.gettext(text)
-            size = font.size(translated)
-            ren = font.render(translated, True, COLOUR_BLACK)
-            pos_x = int((self.msg_surface.get_width() - size[0]) / 2)
-            pos_y = int(y_base + (y_step - size[1]) / 2)
-            self.msg_surface.blit(ren, (pos_x, pos_y))
-            y_base += y_step
+            
+        # font = pygame.font.SysFont(DEFAULT_FONT,  20)
+        # font_height = font.get_height() + font.get_ascent() + font.get_descent()
+        # max_lines = self.msg_surface.get_height() / (font_height + self.spacing)
+        # no_lines = len(lines)
+        # if no_lines > max_lines:
+        #     no_lines = max_lines
+        # y_step = self.msg_surface.get_height() / no_lines
+        # y_base = 0
+        # for text in lines:
+        #     translated = translation.gettext(text)
+        #     size = font.size(translated)
+        #     ren = font.render(translated, True, COLOUR_BLACK)
+        #     pos_x = int((self.msg_surface.get_width() - size[0]) / 2)
+        #     pos_y = int(y_base + (y_step - size[1]) / 2)
+        #     self.msg_surface.blit(ren, (pos_x, pos_y))
+        #     y_base += y_step
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
-            if self.status_ready:
-                
+            if self.status_ready:                
                 self.text_status([self.idle_text, MSG("SHOW_TICKET")])
             else:                
                 self.text_status([self.idle_text, MSG("NOT_READY")])
