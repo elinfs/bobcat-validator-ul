@@ -27,7 +27,7 @@ COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
 COLOUR_RED = 231, 67, 42
 
-DEFAULT_FONT = "Roboto Bold"
+DEFAULT_FONT = "Roboto-Bold"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 
 SOUND_FAILED = "failed"
