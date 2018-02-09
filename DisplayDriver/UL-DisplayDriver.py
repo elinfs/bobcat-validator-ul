@@ -1,7 +1,3 @@
-
-
-"""UL display driver"""
-
 from typing import Dict, List
 import logging
 import os
@@ -21,13 +17,12 @@ from .display_device import DisplayDevice
 RESOLUTION = WIDTH, HEIGHT = 480, 272
 MARGIN = 14
 
-COLOUR_GRAY = 83, 86, 90
 COLOUR_BLACK = 0, 0, 0
 COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
-COLOUR_RED = 231, 67, 42
+COLOUR_GRAY = 83, 86, 90
 
-DEFAULT_FONT = "Helvetica"
+DEFAULT_FONT = "Roboto"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 
 SOUND_FAILED = "failed"
@@ -60,7 +55,7 @@ class SoundGeneric(object):
 
 
 class DisplayGeneric(Display):
-    """UL display driver"""
+    """Generic display driver"""
 
     def __init__(self, device: DisplayDevice, config: Dict) -> None:
         self.device = device
@@ -83,12 +78,11 @@ class DisplayGeneric(Display):
                 flags = flags | pygame.FULLSCREEN
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
-            self.header_surface = pygame.Surface((480, 62))      
-            self.msg_surface = pygame.Surface((480, 210))      
+            self.header_surface = pygame.Surface((440, 62))            
+            if not hasattr(self, 'title'):
+                self.title = "Bobcat Validator"
             self.set_background()
             self.idle_text = ""
-            self.title = ""
-            self.subTitle = ""
             self.spacing = config.get('spacing', 4)
         else:
             self.screen = None
@@ -106,7 +100,6 @@ class DisplayGeneric(Display):
                 self.idle(None)
             else:
                 self.screen.blit(self.header_surface, (0, 0))
-                # self.screen.blit(self.msg_surface, (0, 62))
                 self.update_timestamp()
                 pygame.display.update()
                 pygame.event.pump()
@@ -121,53 +114,34 @@ class DisplayGeneric(Display):
         # fill background
         self.screen.fill(COLOUR_GRAY)
 
-        #fill header
-        self.header_surface.fill(COLOUR_YELLOW)      
-
-        # fill background
-        self.msg_surface.fill(COLOUR_GRAY)
+        self.header_surface.fill(COLOUR_YELLOW)
 
         # add logo
         logo_filename = DEFAULT_LOGO
         logo_surface = pygame.image.load(logo_filename).convert_alpha()
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
-        self.header_surface.blit(logo_surface, (MARGIN, MARGIN))
+        self.screen.blit(logo_surface, (MARGIN, MARGIN))
 
-        # add msg        
-        font = pygame.font.SysFont(config_status.get("font", DEFAULT_FONT), config_status.get("size", 36))
+        # add title
+        config_title = self.config.get("title", {})
+        font = pygame.font.SysFont(config_title.get("font", DEFAULT_FONT), config_title.get("size", 18))
         size = font.size(self.title)
-        ren = font.render(self.title, True, COLOUR_YELLOW)
-        self.msg_surface.blit(ren, (WIDTH - MARGIN - size[0], 30))
+        ren = font.render(self.title, True, COLOUR_BLACK)
+        self.screen.blit(ren, (WIDTH - MARGIN - size[0], 30))
 
     def text_status(self, lines: List[str], translation: gettext.NullTranslations=None) -> None:
         """Set display status text"""
-        if translation is None:
-            translation = self.translation
-            
-        # font = pygame.font.SysFont(DEFAULT_FONT,  20)
-        # font_height = font.get_height() + font.get_ascent() + font.get_descent()
-        # max_lines = self.msg_surface.get_height() / (font_height + self.spacing)
-        # no_lines = len(lines)
-        # if no_lines > max_lines:
-        #     no_lines = max_lines
-        # y_step = self.msg_surface.get_height() / no_lines
-        # y_base = 0
-        # for text in lines:
-        #     translated = translation.gettext(text)
-        #     size = font.size(translated)
-        #     ren = font.render(translated, True, COLOUR_BLACK)
-        #     pos_x = int((self.msg_surface.get_width() - size[0]) / 2)
-        #     pos_y = int(y_base + (y_step - size[1]) / 2)
-        #     self.msg_surface.blit(ren, (pos_x, pos_y))
-        #     y_base += y_step
+
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
-            if self.status_ready:                
+            if self.status_ready:
+                self.header_surface.fill(COLOUR_WHITE)
                 self.text_status([self.idle_text, MSG("SHOW_TICKET")])
-            else:                
+            else:
+                self.header_surface.fill(COLOUR_RED)
                 self.text_status([self.idle_text, MSG("NOT_READY")])
             self.show()
 
@@ -193,19 +167,22 @@ class DisplayGeneric(Display):
                             product_name.append(pn)
                     if not product_name:
                         product_name.append(MSG("UNKNOWN_PRODUCT"))
-            if res == ValidateResult.success:                
+            if res == ValidateResult.success:
+                self.header_surface.fill(COLOUR_GREEN)
                 msg = [MSG("SUCCESS")]
 
-            elif graced:                
+            elif graced:
+                self.header_surface.fill(COLOUR_ORANGE)
                 msg = [MSG("GRACED")]
-            else:                
+            else:
+                self.header_surface.fill(COLOUR_RED)
                 msg = [MSG("FAILED")]
             if reason:
                 msg.append(reason)
             elif res != ValidateResult.success:
                 msg.append(VALIDATE_RESULT_MSG[result.best_result])
             msg += product_name
-            # self.text_status(msg, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+            self.text_status(msg, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
             if res == ValidateResult.success:
