@@ -27,7 +27,7 @@ COLOUR_WHITE = 255, 255, 255
 COLOUR_YELLOW = 241, 200, 0
 COLOUR_RED = 231, 67, 42
 
-DEFAULT_FONT = "Roboto Bold"
+DEFAULT_FONT = "Helvetica"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 
 SOUND_FAILED = "failed"
@@ -84,7 +84,7 @@ class DisplayGeneric(Display):
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
             self.header_surface = pygame.Surface((480, 62))      
-            self.msg_surface = pygame.Surface((480, 200))      
+            self.msg_surface = pygame.Surface((480, 210))      
             self.set_background()
             self.idle_text = ""
             self.title = ""
@@ -106,7 +106,7 @@ class DisplayGeneric(Display):
                 self.idle(None)
             else:
                 self.screen.blit(self.header_surface, (0, 0))
-                self.screen.blit(self.msg_surface, (0, 62))
+                # self.screen.blit(self.msg_surface, (0, 62))
                 self.update_timestamp()
                 pygame.display.update()
                 pygame.event.pump()
@@ -166,9 +166,9 @@ class DisplayGeneric(Display):
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
             if self.status_ready:                
-                self.text_status([self.idle_text, MSG("SHOW_TICKET")])
+                # self.text_status([self.idle_text, MSG("SHOW_TICKET")])
             else:                
-                self.text_status([self.idle_text, MSG("NOT_READY")])
+                # self.text_status([self.idle_text, MSG("NOT_READY")])
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -205,7 +205,7 @@ class DisplayGeneric(Display):
             elif res != ValidateResult.success:
                 msg.append(VALIDATE_RESULT_MSG[result.best_result])
             msg += product_name
-            self.text_status(msg, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+            # self.text_status(msg, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
             if res == ValidateResult.success:
