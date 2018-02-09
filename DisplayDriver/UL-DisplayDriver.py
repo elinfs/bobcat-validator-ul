@@ -129,22 +129,22 @@ class DisplayGeneric(Display):
         if translation is None:
             translation = self.translation
         config_status = self.config.get("status", {})
-        font = pygame.font.SysFont(config_status.get("font", DEFAULT_FONT), config_status.get("size", 20))
+
+        """title"""
+        t1 = "Hej!"
+        font = pygame.font.SysFont(DEFAULT_FONT, 36)
         font_height = font.get_height() + font.get_ascent() + font.get_descent()
-        max_lines = self.status_surface.get_height() / (font_height + self.spacing)
-        no_lines = len(lines)
-        if no_lines > max_lines:
-            no_lines = max_lines
-        y_step = self.status_surface.get_height() / no_lines
-        y_base = 0
-        for text in lines:
-            translated = translation.gettext(text)
-            size = font.size(translated)
-            ren = font.render(translated, True, COLOUR_YELLOW)
-            pos_x = int((self.status_surface.get_width() - size[0]) / 2)
-            pos_y = int(y_base + (y_step - size[1]) / 2)
-            self.status_surface.blit(ren, (pos_x, pos_y))
-            y_base += y_step
+        size = font.size(t1)
+        ren = font.render(t1, True, COLOUR_YELLOW)
+        self.status_surface.blit(ren, (50, 50))
+
+        """sub title"""
+        t2 = "Blippa här."
+        subfont = pygame.font.SysFont(DEFAULT_FONT, 22)
+        subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
+        subsize = subfont.size(t2)
+        subren = subfont.render(t2, True, COLOUR_WHITE)
+        self.status_surface.blit(ren, (50, 50 + font_height))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
