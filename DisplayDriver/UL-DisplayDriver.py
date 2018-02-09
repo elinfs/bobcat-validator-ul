@@ -78,9 +78,10 @@ class DisplayGeneric(Display):
                 flags = flags | pygame.FULLSCREEN
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
-            self.header_surface = pygame.Surface((480, 62))            
+            self.header_surface = pygame.Surface((480, 62))
+            self.status_surface = pygame.Surface((480, 210))            
             if not hasattr(self, 'title'):
-                self.title = "Bobcat Validator"
+                self.title = "BLIPA HÄR"
             self.set_background()
             self.idle_text = ""
             self.spacing = config.get('spacing', 4)
@@ -100,6 +101,7 @@ class DisplayGeneric(Display):
                 self.idle(None)
             else:
                 self.screen.blit(self.header_surface, (0, 0))
+                self.screen.blit(self.status_surface,(0, 62))
                 self.update_timestamp()
                 pygame.display.update()
                 pygame.event.pump()
@@ -113,25 +115,36 @@ class DisplayGeneric(Display):
 
         # fill background
         self.screen.fill(COLOUR_GRAY)
-
+        self.status_surface.fill(COLOUR_GRAY)
         self.header_surface.fill(COLOUR_YELLOW)
 
         # add logo
         logo_filename = DEFAULT_LOGO
         logo_surface = pygame.image.load(logo_filename).convert_alpha()
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
-        self.header_surface.blit(logo_surface, (MARGIN, MARGIN))
-
-        # add title
-        config_title = self.config.get("title", {})
-        font = pygame.font.SysFont(config_title.get("font", DEFAULT_FONT), config_title.get("size", 18))
-        size = font.size(self.title)
-        ren = font.render(self.title, True, COLOUR_BLACK)
-        self.screen.blit(ren, (WIDTH - MARGIN - size[0], 30))
+        self.header_surface.blit(logo_surface, (MARGIN, MARGIN))        
 
     def text_status(self, lines: List[str], translation: gettext.NullTranslations=None) -> None:
         """Set display status text"""
-
+        if translation is None:
+            translation = self.translation
+        config_status = self.config.get("status", {})
+        font = pygame.font.SysFont(config_status.get("font", DEFAULT_FONT), config_status.get("size", 20))
+        font_height = font.get_height() + font.get_ascent() + font.get_descent()
+        max_lines = self.status_surface.get_height() / (font_height + self.spacing)
+        no_lines = len(lines)
+        if no_lines > max_lines:
+            no_lines = max_lines
+        y_step = self.status_surface.get_height() / no_lines
+        y_base = 0
+        for text in lines:
+            translated = translation.gettext(text)
+            size = font.size(translated)
+            ren = font.render(translated, True, COLOUR_YELLOW)
+            pos_x = int((self.status_surface.get_width() - size[0]) / 2)
+            pos_y = int(y_base + (y_step - size[1]) / 2)
+            self.status_surface.blit(ren, (pos_x, pos_y))
+            y_base += y_step
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
