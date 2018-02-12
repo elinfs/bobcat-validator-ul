@@ -96,10 +96,8 @@ class DisplayGeneric(Display):
         if self.screen:
             if self.status_ready != self.device.ready:
                 self.idle(None)
-            else:
-                self.screen.blit(self.header_surface, (0, 0))
-                self.screen.blit(self.status_surface,(0, 62))
-                self.update_timestamp()
+            else:                       
+                self.screen.blit(self.status_surface,(0, 62))     
                 pygame.display.update()
                 pygame.event.pump()
 
@@ -114,6 +112,7 @@ class DisplayGeneric(Display):
         self.screen.fill(COLOUR_GRAY)
         self.status_surface.fill(COLOUR_GRAY)
         self.header_surface.fill(COLOUR_YELLOW)
+        self.screen.blit(self.header_surface, (0, 0))        
 
         # add logo
         logo_filename = DEFAULT_LOGO
