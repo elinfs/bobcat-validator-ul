@@ -130,7 +130,7 @@ class DisplayGeneric(Display):
         """title"""
         t1 = title.text
         font = pygame.font.SysFont(DEFAULT_FONT, title.fontSize, True)
-        font_height = font.get_height() + font.get_ascent() + font.get_descent()
+        font_height = font.get_height()
         size = font.size(t1)
         ren = font.render(t1, True, COLOUR_YELLOW)
         totalTextHight += ren.get_height()
@@ -140,10 +140,10 @@ class DisplayGeneric(Display):
         if subtitle is not None:
             t2 = subtitle.text
             subfont = pygame.font.SysFont(DEFAULT_FONT, subtitle.fontSize, True)
-            subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
+            subfont_height = subfont.get_height()
             subsize = subfont.size(t2)
             subren = subfont.render(t2, True, COLOUR_WHITE)
-            totalTextHight += subren.get_height() + MARGIN                    
+            totalTextHight += subren.get_height() + MARGIN        
         
         startPosY = self.status_surface.get_height()/2 - (totalTextHight/ 2)
 
