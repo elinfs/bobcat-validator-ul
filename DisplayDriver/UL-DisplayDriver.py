@@ -79,11 +79,8 @@ class DisplayGeneric(Display):
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
             self.header_surface = pygame.Surface((480, 62))
-            self.status_surface = pygame.Surface((480, 210))            
-            if not hasattr(self, 'title'):
-                self.title = "BLIPA HÄR"
-            self.set_background()
-            self.idle_text = ""
+            self.status_surface = pygame.Surface((480, 210))                        
+            self.set_background()            
             self.spacing = config.get('spacing', 4)
         else:
             self.screen = None
@@ -124,36 +121,36 @@ class DisplayGeneric(Display):
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
         self.header_surface.blit(logo_surface, (MARGIN, MARGIN))        
 
-    def text_status(self, lines: List[str], translation: gettext.NullTranslations=None) -> None:
+    def text_status(self, title: str, subtitle : str, translation: gettext.NullTranslations=None) -> None:
         """Set display status text"""
         if translation is None:
             translation = self.translation
         config_status = self.config.get("status", {})
 
         """title"""
-        t1 = "Hej!"
-        font = pygame.font.SysFont(DEFAULT_FONT, 36)
+        t1 = title
+        font = pygame.font.SysFont(DEFAULT_FONT, 36, True)
         font_height = font.get_height() + font.get_ascent() + font.get_descent()
         size = font.size(t1)
         ren = font.render(t1, True, COLOUR_YELLOW)
         self.status_surface.blit(ren, (50, 50))
 
         """sub title"""
-        t2 = "Blippa här."
-        subfont = pygame.font.SysFont(DEFAULT_FONT, 36)
+        t2 = subtitle
+        subfont = pygame.font.SysFont(DEFAULT_FONT, 36, True)
         subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
         subsize = subfont.size(t2)
         subren = subfont.render(t2, True, COLOUR_WHITE)
-        self.status_surface.blit(subren, (50, font_height + 10))
+        self.status_surface.blit(subren, (50, font_height + MARGIN))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
             if self.status_ready:                
-                self.text_status([self.idle_text, MSG("SHOW_TICKET")])
+                self.text_status("Hej!", "Blippa här.")
             else:                
-                self.text_status([self.idle_text, MSG("NOT_READY")])
+                self.text_status("Hoppsan", "Något är fel,\nprata med föraren.")
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -190,7 +187,7 @@ class DisplayGeneric(Display):
             elif res != ValidateResult.success:
                 msg.append(VALIDATE_RESULT_MSG[result.best_result])
             msg += product_name
-            self.text_status(msg, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+            self.text_status("blip blipp", "Hippidihopp", gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
             if res == ValidateResult.success:
