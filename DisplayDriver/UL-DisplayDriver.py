@@ -29,7 +29,7 @@ SOUND_GRACED = "graced"
 SOUND_SUCCESS = "success"
 
 class DisplayText:
-    def __init__(self, text: str, fontSize: int=40, color: Color=COLOR_WHITE):
+    def __init__(self, text: str, fontSize: int=40, color=COLOR_WHITE):
         self.text = text
         self.fontSize = fontSize
         self.color = color
@@ -158,9 +158,9 @@ class DisplayGeneric(Display):
         if self.screen and (last_result is None or self.last_result == last_result):
             self.status_surface.fill(COLOR_GRAY)
             if self.status_ready:                   
-                self.text_status(DisplayText("Hej!", color=COLOR_YELLOW), DisplayText("Blippa här."))
+                self.text_status(DisplayText("Hej!", 40, COLOR_YELLOW), DisplayText("Blippa här."))
             else:                                
-                self.text_status(DisplayText("Hoppsan", color=COLOR_YELLOW), DisplayText("Något är fel, prata med föraren.", 26))
+                self.text_status(DisplayText("Hoppsan", 40, COLOR_YELLOW), DisplayText("Något är fel, prata med föraren.", 26))
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -182,7 +182,7 @@ class DisplayGeneric(Display):
                 title = DisplayText("Trevlig resa!")
                 subtitle = None     
             else:                                
-                title = DisplayText("Ajdå!", color=COLOR_YELLOW)
+                title = DisplayText("Ajdå!", 40, COLOR_YELLOW)
                 subtitle = DisplayText("Du har inte en giltig biljett", 26)
             # if reason:
             
