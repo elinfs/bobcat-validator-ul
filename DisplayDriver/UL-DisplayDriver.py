@@ -16,10 +16,10 @@ from .display_device import DisplayDevice
 RESOLUTION = WIDTH, HEIGHT = 480, 272
 MARGIN = 14
 
-COLOUR_BLACK = 0, 0, 0
-COLOUR_WHITE = 255, 255, 255
-COLOUR_YELLOW = 241, 200, 0
-COLOUR_GRAY = 83, 86, 90
+COLOR_BLACK = 0, 0, 0
+COLOR_WHITE = 255, 255, 255
+COLOR_YELLOW = 241, 200, 0
+COLOR_GRAY = 83, 86, 90
 
 DEFAULT_FONT = "Roboto"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
@@ -29,9 +29,10 @@ SOUND_GRACED = "graced"
 SOUND_SUCCESS = "success"
 
 class DisplayText:
-    def __init__(self, text: str, fontSize: int=40):
+    def __init__(self, text: str, fontSize: int=40, color: Color=COLOR_WHITE):
         self.text = text
         self.fontSize = fontSize
+        self.color = color
 
 
 class SoundGeneric(object):
@@ -109,9 +110,9 @@ class DisplayGeneric(Display):
         """Setup background"""
 
         # fill background
-        self.screen.fill(COLOUR_GRAY)
-        self.status_surface.fill(COLOUR_GRAY)
-        self.header_surface.fill(COLOUR_YELLOW)        
+        self.screen.fill(COLOR_GRAY)
+        self.status_surface.fill(COLOR_GRAY)
+        self.header_surface.fill(COLOR_YELLOW)        
 
         # add logo
         logo_filename = DEFAULT_LOGO
@@ -132,7 +133,7 @@ class DisplayGeneric(Display):
         font = pygame.font.SysFont(DEFAULT_FONT, title.fontSize, True)
         font_height = font.get_height()
         size = font.size(t1)
-        ren = font.render(t1, True, COLOUR_YELLOW)
+        ren = font.render(t1, True, title.color)
         totalTextHight += ren.get_height()
         
 
@@ -142,24 +143,24 @@ class DisplayGeneric(Display):
             subfont = pygame.font.SysFont(DEFAULT_FONT, subtitle.fontSize, True)
             subfont_height = subfont.get_height()
             subsize = subfont.size(t2)
-            subren = subfont.render(t2, True, COLOUR_WHITE)
-            totalTextHight += subren.get_height() + MARGIN        
+            subren = subfont.render(t2, True, subtitle.color)
+            totalTextHight += subren.get_height()        
         
         startPosY = self.status_surface.get_height()/2 - (totalTextHight/ 2)
 
         self.status_surface.blit(ren, (50, startPosY))
         if subtitle is not None:
-            self.status_surface.blit(subren, (50, startPosY + ren.get_height() + MARGIN))
+            self.status_surface.blit(subren, (50, startPosY + ren.get_height()))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
-            self.status_surface.fill(COLOUR_GRAY)
+            self.status_surface.fill(COLOR_GRAY)
             if self.status_ready:                   
-                self.text_status(DisplayText("Hej!"), DisplayText("Blippa här."))
+                self.text_status(DisplayText("Hej!", color:COLOR_YELLOW), DisplayText("Blippa här."))
             else:                                
-                self.text_status(DisplayText("Hoppsan"), DisplayText("Något är fel,\nprata med föraren.", 26))
+                self.text_status(DisplayText("Hoppsan", color:COLOR_YELLOW), DisplayText("Något är fel,\nprata med föraren.", 26))
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -181,13 +182,13 @@ class DisplayGeneric(Display):
                 title = DisplayText("Trevlig resa!")
                 subtitle = None     
             else:                                
-                title = DisplayText("Ajdå!")
+                title = DisplayText("Ajdå!", color:COLOR_YELLOW)
                 subtitle = DisplayText("Du har inte en giltig biljett", 26)
             # if reason:
             
             # elif res != ValidateResult.success:
             
-            self.status_surface.fill(COLOUR_GRAY)
+            self.status_surface.fill(COLOR_GRAY)
             self.text_status(title, subtitle, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
