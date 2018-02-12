@@ -4,7 +4,6 @@ import os
 import time
 import gettext
 import pygame
-import tzlocal
 
 from bobcat_validator import LOCALEDIR, MSG, SOUNDSDIR
 from bobcat_validator.schema_validator import validate_config_schema
@@ -28,6 +27,11 @@ DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 SOUND_FAILED = "failed"
 SOUND_GRACED = "graced"
 SOUND_SUCCESS = "success"
+
+class DisplayText:
+    def __init__(self, text: str, fontSize: int=40):
+        self.text = text
+        self.fontSize = fontSize
 
 
 class SoundGeneric(object):
@@ -59,8 +63,7 @@ class DisplayGeneric(Display):
 
     def __init__(self, device: DisplayDevice, config: Dict) -> None:
         self.device = device
-        self.config = config
-        self.tz = tzlocal.get_localzone()
+        self.config = config        
         validate_config_schema(config, "display_generic")
         self.domain = device.dispatcher.domain
         self.translation = device.dispatcher.translation
@@ -96,14 +99,11 @@ class DisplayGeneric(Display):
         if self.screen:
             if self.status_ready != self.device.ready:
                 self.idle(None)
-            else:                       
+            else:                      
+                self.screen.blit(self.header_surface, (0, 0))         
                 self.screen.blit(self.status_surface,(0, 62))     
                 pygame.display.update()
                 pygame.event.pump()
-
-    def update_timestamp(self) -> None:
-        """Update time on display"""
-
 
     def set_background(self) -> None:
         """Setup background"""
@@ -111,8 +111,7 @@ class DisplayGeneric(Display):
         # fill background
         self.screen.fill(COLOUR_GRAY)
         self.status_surface.fill(COLOUR_GRAY)
-        self.header_surface.fill(COLOUR_YELLOW)
-        self.screen.blit(self.header_surface, (0, 0))        
+        self.header_surface.fill(COLOUR_YELLOW)        
 
         # add logo
         logo_filename = DEFAULT_LOGO
@@ -120,38 +119,47 @@ class DisplayGeneric(Display):
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
         self.header_surface.blit(logo_surface, (MARGIN, MARGIN))        
 
-    def text_status(self, title: str, subtitle : str, translation: gettext.NullTranslations=None) -> None:
+    def text_status(self, title: DisplayText, subtitle : DisplayText=None, translation: gettext.NullTranslations=None) -> None:
         """Set display status text"""
         if translation is None:
             translation = self.translation
         config_status = self.config.get("status", {})
 
+        totalTextHight = 0
+
         """title"""
-        t1 = title
-        font = pygame.font.SysFont(DEFAULT_FONT, 36, True)
+        t1 = title.text
+        font = pygame.font.SysFont(DEFAULT_FONT, title.fontSize, True)
         font_height = font.get_height() + font.get_ascent() + font.get_descent()
         size = font.size(t1)
         ren = font.render(t1, True, COLOUR_YELLOW)
-        self.status_surface.blit(ren, (50, 50))
+        totalTextHight += ren.get_height()
+        
 
         """sub title"""
-        t2 = subtitle
-        subfont = pygame.font.SysFont(DEFAULT_FONT, 36, True)
-        subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
-        subsize = subfont.size(t2)
-        subren = subfont.render(t2, True, COLOUR_WHITE)
-        self.status_surface.blit(subren, (50, font_height + MARGIN))
+        if subtitle is not None:
+            t2 = subtitle.text
+            subfont = pygame.font.SysFont(DEFAULT_FONT, subtitle.fontSize, True)
+            subfont_height = subfont.get_height() + subfont.get_ascent() + subfont.get_descent()
+            subsize = subfont.size(t2)
+            subren = subfont.render(t2, True, COLOUR_WHITE)
+            totalTextHight += subren.get_height() + MARGIN                    
+        
+        startPosY = self.status_surface.get_height()/2 - (totalTextHight/ 2)
+
+        self.status_surface.blit(ren, (50, startPosY))
+        if subtitle is not None:
+            self.status_surface.blit(subren, (50, startPosY + ren.get_height() + MARGIN))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):
-            if self.status_ready:   
-                self.status_surface.fill(COLOUR_GRAY)             
-                self.text_status("Hej!", "Blippa här.")
-            else:                
-                self.status_surface.fill(COLOUR_GRAY)
-                self.text_status("Hoppsan", "Något är fel,\nprata med föraren.")
+            self.status_surface.fill(COLOUR_GRAY)
+            if self.status_ready:                   
+                self.text_status(DisplayText("Hej!"), DisplayText("Blippa här."))
+            else:                                
+                self.text_status(DisplayText("Hoppsan"), DisplayText("Något är fel,\nprata med föraren.", 26))
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -160,8 +168,7 @@ class DisplayGeneric(Display):
         res = result.best_result
         reason = result.best_reason
         graced = self.device.dispatcher.is_graced_result(res)
-        if self.screen:
-            product_name = []
+        if self.screen:            
             langs = [self.device.dispatcher.language]
             if result.best_ticket_id:
                 pid = result.best_participant_id
@@ -169,33 +176,24 @@ class DisplayGeneric(Display):
                 md = ticket.get_metadata()
                 if 'pln' in md:
                     langs.insert(0, md['pln'])
-                if 'pds' in md and self.device.dispatcher.products:
-                    for prd_id in md['pds']:
-                        pn = self.device.dispatcher.products.get_name(pid, prd_id, langs)
-                        if pn:
-                            product_name.append(pn)
-                    if not product_name:
-                        product_name.append(MSG("UNKNOWN_PRODUCT"))
-            if res == ValidateResult.success:                
-                self.status_surface.fill(COLOUR_GRAY)
-                msg = [MSG("SUCCESS")]
-            elif graced:                
-                self.status_surface.fill(COLOUR_GRAY)
-                msg = [MSG("GRACED")]
-            else:                
-                self.status_surface.fill(COLOUR_GRAY)
-                msg = [MSG("FAILED")]
-            if reason:
-                msg.append(reason)
-            elif res != ValidateResult.success:
-                msg.append(VALIDATE_RESULT_MSG[result.best_result])
-            msg += product_name
-            self.text_status("blip blipp", "Hippidihopp", gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+
+            if res == ValidateResult.success or graced:                                
+                title = DisplayText("Trevlig resa!")
+                subtitle = None     
+            else:                                
+                title = DisplayText("Ajdå!")
+                subtitle = DisplayText("Du har inte en giltig biljett", 26)
+            # if reason:
+            
+            # elif res != ValidateResult.success:
+            
+            self.status_surface.fill(COLOUR_GRAY)
+            self.text_status(title, subtitle, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
             if res == ValidateResult.success:
                 self.sound.play_status(SOUND_SUCCESS)
             elif graced:
-                self.sound.play_status(SOUND_GRACED)
+                self.sound.play_status(SOUND_SUCCESS)
             else:
                 self.sound.play_status(SOUND_FAILED)
