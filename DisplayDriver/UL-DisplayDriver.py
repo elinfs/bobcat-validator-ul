@@ -131,26 +131,23 @@ class DisplayGeneric(Display):
         """title"""
         t1 = title.text
         font = pygame.font.SysFont(DEFAULT_FONT, title.fontSize, True)
-        font_height = font.get_height()
-        size = font.size(t1)
+        font_height = font.get_ascent() + font.get_descent()        
         ren = font.render(t1, True, title.color)
-        totalTextHight += ren.get_height()
+        totalTextHight += font_height
         
-
         """sub title"""
         if subtitle is not None:
             t2 = subtitle.text
             subfont = pygame.font.SysFont(DEFAULT_FONT, subtitle.fontSize, True)
-            subfont_height = subfont.get_height()
-            subsize = subfont.size(t2)
+            subfont_height = subfont.get_ascent() + subfont.get_descent()            
             subren = subfont.render(t2, True, subtitle.color)
-            totalTextHight += subren.get_height()        
+            totalTextHight += subfont_height  
         
         startPosY = self.status_surface.get_height()/2 - (totalTextHight/ 2)
 
         self.status_surface.blit(ren, (50, startPosY))
         if subtitle is not None:
-            self.status_surface.blit(subren, (50, startPosY + ren.get_height()))
+            self.status_surface.blit(subren, (50, startPosY + font_height))
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
