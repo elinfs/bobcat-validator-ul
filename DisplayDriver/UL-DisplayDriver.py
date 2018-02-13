@@ -145,9 +145,9 @@ class DisplayGeneric(Display):
         if self.screen and (last_result is None or self.last_result == last_result):
             self.status_surface.fill(COLOR_GRAY)
             if self.status_ready:                   
-                self.text_status([DisplayText("Hej!", color=COLOR_YELLOW), DisplayText("Blippa här.", offset=-10)])
+                self.text_status([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)])
             else:                                
-                self.text_status([DisplayText("Hoppsan", color=COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
+                self.text_status([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -169,7 +169,7 @@ class DisplayGeneric(Display):
             if res == ValidateResult.success or graced:                                
                 titles = titles + DisplayText("Trevlig resa!"))                   
             else:                                
-                titles = titles + DisplayText("Ajdå!", 40, COLOR_YELLOW)
+                titles = titles + DisplayText("Ajdå!", 40, 0, COLOR_YELLOW)
                 titles = titles + DisplayText("Du har inte", 26, -10)
                 titles = titles + DisplayText("en giltig biljett.", 26, -10)
             # if reason:
