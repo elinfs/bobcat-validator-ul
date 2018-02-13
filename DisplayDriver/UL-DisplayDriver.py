@@ -29,11 +29,8 @@ SOUND_GRACED = "graced"
 SOUND_SUCCESS = "success"
 
 class DisplayText:
-    def __init__(self, text: str, fontSize: int=40, offset: int=0, color=COLOR_WHITE, translation: gettext.NullTranslations=None) -> None:
+    def __init__(self, text: str, fontSize: int=40, offset: int=0, color=COLOR_WHITE) -> None:
         """Creates text surface"""     
-        if translation is None:
-            translation = self.translation
-
         self.text = text        
         self.color = color
         self.offset = offset
