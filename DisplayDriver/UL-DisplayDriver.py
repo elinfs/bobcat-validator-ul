@@ -29,11 +29,17 @@ SOUND_GRACED = "graced"
 SOUND_SUCCESS = "success"
 
 class DisplayText:
-    def __init__(self, text: str, fontSize: int=40, color=COLOR_WHITE):
-        self.text = text
-        self.fontSize = fontSize
-        self.color = color
+    def __init__(self, text: str, fontSize: int=40, offset: int=0, color=COLOR_WHITE, translation: gettext.NullTranslations=None) -> None:
+        """Creates text surface"""     
+        if translation is None:
+            translation = self.translation
 
+        self.text = text        
+        self.color = color
+        self.offset = offset
+        self.fontSize = fontSize
+        self.font = pygame.font.SysFont(DEFAULT_FONT, self.fontSize, True)
+        self.surface = self.font.render(self.text, True, self.color)        
 
 class SoundGeneric(object):
     """Generic sound driver (used by DisplayGeneric)"""
@@ -120,34 +126,18 @@ class DisplayGeneric(Display):
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
         self.header_surface.blit(logo_surface, (MARGIN, MARGIN))        
 
-    def text_status(self, title: DisplayText, subtitle : DisplayText=None, translation: gettext.NullTranslations=None) -> None:
-        """Set display status text"""
-        if translation is None:
-            translation = self.translation
-        config_status = self.config.get("status", {})
-
+    def text_status(self, displayTexts: List[DisplayText], translation: gettext.NullTranslations=None) -> None:
+        """Set display status text"""        
         totalTextHeight = 0
-
-        """title"""
-        t1 = title.text
-        font = pygame.font.SysFont(DEFAULT_FONT, title.fontSize, True)
-        font_height = font.get_height()       
-        ren = font.render(t1, True, title.color)
-        totalTextHeight += ren.get_height()
-        
-        """sub title"""
-        if subtitle is not None:
-            t2 = subtitle.text
-            subfont = pygame.font.SysFont(DEFAULT_FONT, subtitle.fontSize, True)
-            subfont_height = subfont.get_height()           
-            subren = subfont.render(t2, True, subtitle.color)
-            totalTextHeight += subren.get_height()  
-        
-        startPosY = self.status_surface.get_height()/2 - (totalTextHeight/ 2)
-
-        self.status_surface.blit(ren, (50, startPosY))
-        if subtitle is not None:
-            self.status_surface.blit(subren, (50, startPosY + ren.get_height()))
+        for displayText in displayTexts:            
+            totalTextHeight += displayText.font.get_height() + displayText.offset        
+        posY = self.status_surface.get_height()/2 - (totalTextHeight/ 2)
+        posX = 50
+        for displayText in displayTexts:
+            offsetY = posY + displayText.offset
+            self.status_surface.blit(displayText.surface, (posX, offsetY))
+            logging.info("posY: " + str(posY) + " | offsetY: " + str(offsetY) + " | new posY:" str(offsetY + displayText.font.get_height()) )
+            posY = offsetY + displayText.font.get_height()            
 
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
@@ -155,9 +145,9 @@ class DisplayGeneric(Display):
         if self.screen and (last_result is None or self.last_result == last_result):
             self.status_surface.fill(COLOR_GRAY)
             if self.status_ready:                   
-                self.text_status(DisplayText("Hej!", 40, COLOR_YELLOW), DisplayText("Blippa här."))
+                self.text_status([DisplayText("Hej!", color=COLOR_YELLOW), DisplayText("Blippa här.", offset=-10)])
             else:                                
-                self.text_status(DisplayText("Hoppsan", 40, COLOR_YELLOW), DisplayText("Något är fel, prata med föraren.", 26))
+                self.text_status([DisplayText("Hoppsan", color=COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -166,6 +156,7 @@ class DisplayGeneric(Display):
         res = result.best_result
         reason = result.best_reason
         graced = self.device.dispatcher.is_graced_result(res)
+        titles = []
         if self.screen:            
             langs = [self.device.dispatcher.language]
             if result.best_ticket_id:
@@ -176,17 +167,17 @@ class DisplayGeneric(Display):
                     langs.insert(0, md['pln'])
 
             if res == ValidateResult.success or graced:                                
-                title = DisplayText("Trevlig resa!")
-                subtitle = None     
+                titles = titles + DisplayText("Trevlig resa!"))                   
             else:                                
-                title = DisplayText("Ajdå!", 40, COLOR_YELLOW)
-                subtitle = DisplayText("Du har inte en giltig biljett", 26)
+                titles = titles + DisplayText("Ajdå!", 40, COLOR_YELLOW)
+                titles = titles + DisplayText("Du har inte", 26, -10)
+                titles = titles + DisplayText("en giltig biljett.", 26, -10)
             # if reason:
             
             # elif res != ValidateResult.success:
             
             self.status_surface.fill(COLOR_GRAY)
-            self.text_status(title, subtitle, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+            self.text_status(titles, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         if self.sound is not None:
             if res == ValidateResult.success:
