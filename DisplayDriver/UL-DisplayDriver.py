@@ -136,7 +136,7 @@ class DisplayGeneric(Display):
         for displayText in displayTexts:
             offsetY = posY + displayText.offset
             self.status_surface.blit(displayText.surface, (posX, offsetY))
-            logging.info("posY: " + str(posY) + " | offsetY: " + str(offsetY) + " | new posY:" str(offsetY + displayText.font.get_height()) )
+            logging.info("posY: " + str(posY) + " | offsetY: " + str(offsetY) + " | new posY:" + str(offsetY + displayText.font.get_height()) )
             posY = offsetY + displayText.font.get_height()            
 
     def idle(self, last_result: MtbValidateResult)-> None:
