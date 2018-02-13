@@ -153,9 +153,9 @@ class DisplayGeneric(Display):
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):        
             if self.status_ready:                   
-                self.update_display([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)])
+                self.update_display([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)], IDEL_LOGO)
             else:                                
-                self.update_display([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
+                self.update_display([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)], OPEN_LOGO)
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -182,12 +182,13 @@ class DisplayGeneric(Display):
                     langs.insert(0, md['pln'])
 
             if res == ValidateResult.success or graced:                                
-                titles.append(DisplayText("Trevlig resa!"))             
+                titles.append(DisplayText("Trevlig resa!"))          
+                icon = APPROVED_LOGO   
             else:                                
                 titles.append(DisplayText("Ajdå!", 40, 0, COLOR_YELLOW))
                 titles.append(DisplayText("Du har inte", 26, -10))
                 titles.append(DisplayText("en giltig biljett.", 26, -10))
-
-            self.update_display(titles, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+                icon = DENIED_LOGO
+            self.update_display(titles, icon, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         
