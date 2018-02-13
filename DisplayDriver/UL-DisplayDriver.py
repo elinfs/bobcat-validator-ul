@@ -143,9 +143,9 @@ class DisplayGeneric(Display):
 
     def set_icon(self, icon: str) -> None:
         icon_img = pygame.image.load(icon).convert_alpha()
-        icon_surface = pygame.transform.smoothscale(icon_img, (100, 100))
+        icon_surface = pygame.transform.smoothscale(icon_img, (150, 150))
         posY = self.status_surface.get_height()/2 - icon_surface.get_height()/2
-        posX = self.status_surface.get_width() -icon_surface.get_width() - MARGIN
+        posX = self.status_surface.get_width() -icon_surface.get_width() - MARGIN*2
         self.status_surface.blit(icon_surface, (posX, posY))
 
     def idle(self, last_result: MtbValidateResult)-> None:
@@ -153,9 +153,9 @@ class DisplayGeneric(Display):
         self.status_ready = self.device.ready
         if self.screen and (last_result is None or self.last_result == last_result):        
             if self.status_ready:                   
-                self.update_display([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)], IDEL_LOGO)
+                self.update_display([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)], OPEN_LOGO)
             else:                                
-                self.update_display([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)], OPEN_LOGO)
+                self.update_display([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)], IDEL_LOGO)
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
