@@ -167,7 +167,7 @@ class DisplayGeneric(Display):
                     langs.insert(0, md['pln'])
 
             if res == ValidateResult.success or graced:                                
-                titles = titles + DisplayText("Trevlig resa!"))                   
+                titles = titles + DisplayText("Trevlig resa!")                 
             else:                                
                 titles = titles + DisplayText("Ajdå!", 40, 0, COLOR_YELLOW)
                 titles = titles + DisplayText("Du har inte", 26, -10)
