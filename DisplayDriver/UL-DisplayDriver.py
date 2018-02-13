@@ -141,7 +141,7 @@ class DisplayGeneric(Display):
             self.status_surface.blit(displayText.surface, (posX, offsetY))            
             posY = offsetY + displayText.font.get_height()            
 
-    def set_icon(delf, icon: str) -> None:
+    def set_icon(self, icon: str) -> None:
         icon_img = pygame.image.load(icon).convert_alpha()
         icon_surface = pygame.transform.smoothscale(icon_img, (100, 100))
         posY = self.status_surface.get_height()/2 - icon_surface.get_height()/2
