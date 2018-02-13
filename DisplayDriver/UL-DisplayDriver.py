@@ -23,6 +23,10 @@ COLOR_GRAY = 83, 86, 90
 
 DEFAULT_FONT = "Roboto"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
+OPEN_LOGO = os.path.dirname(__file__) + '/icons/open.jpg'
+APPROVED_LOGO = os.path.dirname(__file__) + '/icons/approved.png'
+DENIED_LOGO = os.path.dirname(__file__) + '/icons/denied.png'
+IDEL_LOGO = os.path.dirname(__file__) + '/icons/idle.jpg'
 
 SOUND_FAILED = "failed"
 SOUND_GRACED = "graced"
@@ -86,7 +90,7 @@ class DisplayGeneric(Display):
                 pygame.mouse.set_visible(0)
             self.screen = pygame.display.set_mode(RESOLUTION, flags)
             self.header_surface = pygame.Surface((480, 62))
-            self.status_surface = pygame.Surface((480, 210))                        
+            self.status_surface = pygame.Surface((480, 210))                          
             self.set_background()            
             self.spacing = config.get('spacing', 4)
         else:
@@ -123,9 +127,11 @@ class DisplayGeneric(Display):
         logo_surface = pygame.transform.smoothscale(logo_surface, (34, 34))
         self.header_surface.blit(logo_surface, (MARGIN, MARGIN))        
 
-    def text_status(self, displayTexts: List[DisplayText], translation: gettext.NullTranslations=None) -> None:
+    def update_display(self, displayTexts: List[DisplayText], icon: str, translation: gettext.NullTranslations=None) -> None:
         """Set display status text"""        
         totalTextHeight = 0
+        self.status_surface.fill(COLOR_GRAY)
+        self.set_icon(icon)
         for displayText in displayTexts:            
             totalTextHeight += displayText.font.get_height() + displayText.offset        
         posY = self.status_surface.get_height()/2 - (totalTextHeight/ 2)
@@ -135,15 +141,21 @@ class DisplayGeneric(Display):
             self.status_surface.blit(displayText.surface, (posX, offsetY))            
             posY = offsetY + displayText.font.get_height()            
 
+    def set_icon(delf, icon: str) -> None:
+        icon_img = pygame.image.load(icon).convert_alpha()
+        icon_surface = pygame.transform.smoothscale(icon_img, (100, 100))
+        posY = self.status_surface.get_height()/2 - icon_surface.get_height()/2
+        posX = self.status_surface.get_width() -icon_surface.get_width() - MARGIN
+        self.status_surface.blit(icon_surface, (posX, posY))
+
     def idle(self, last_result: MtbValidateResult)-> None:
         """Show idle display"""
         self.status_ready = self.device.ready
-        if self.screen and (last_result is None or self.last_result == last_result):
-            self.status_surface.fill(COLOR_GRAY)
+        if self.screen and (last_result is None or self.last_result == last_result):        
             if self.status_ready:                   
-                self.text_status([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)])
+                self.update_display([DisplayText("Hej!", 40, 0, COLOR_YELLOW), DisplayText("Blippa här.", 40, -10)])
             else:                                
-                self.text_status([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
+                self.update_display([DisplayText("Hoppsan", 40, 0, COLOR_YELLOW), DisplayText("Något är fel,", 26, -10), DisplayText("prata med föraren.", 26, -10)])
             self.show()
 
     def feedback(self, result: MtbValidateResult) -> None:
@@ -175,8 +187,7 @@ class DisplayGeneric(Display):
                 titles.append(DisplayText("Ajdå!", 40, 0, COLOR_YELLOW))
                 titles.append(DisplayText("Du har inte", 26, -10))
                 titles.append(DisplayText("en giltig biljett.", 26, -10))
-            
-            self.status_surface.fill(COLOR_GRAY)
-            self.text_status(titles, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
+
+            self.update_display(titles, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
         
