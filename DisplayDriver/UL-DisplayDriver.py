@@ -132,8 +132,7 @@ class DisplayGeneric(Display):
         posX = 50
         for displayText in displayTexts:
             offsetY = posY + displayText.offset
-            self.status_surface.blit(displayText.surface, (posX, offsetY))
-            logging.info("posY: " + str(posY) + " | offsetY: " + str(offsetY) + " | new posY:" + str(offsetY + displayText.font.get_height()) )
+            self.status_surface.blit(displayText.surface, (posX, offsetY))            
             posY = offsetY + displayText.font.get_height()            
 
     def idle(self, last_result: MtbValidateResult)-> None:
@@ -154,6 +153,13 @@ class DisplayGeneric(Display):
         reason = result.best_reason
         graced = self.device.dispatcher.is_graced_result(res)
         titles = []
+        if self.sound is not None:
+            if res == ValidateResult.success:
+                self.sound.play_status(SOUND_SUCCESS)
+            elif graced:
+                self.sound.play_status(SOUND_SUCCESS)
+            else:
+                self.sound.play_status(SOUND_FAILED)
         if self.screen:            
             langs = [self.device.dispatcher.language]
             if result.best_ticket_id:
@@ -169,17 +175,8 @@ class DisplayGeneric(Display):
                 titles.append(DisplayText("Ajdå!", 40, 0, COLOR_YELLOW))
                 titles.append(DisplayText("Du har inte", 26, -10))
                 titles.append(DisplayText("en giltig biljett.", 26, -10))
-            # if reason:
-            
-            # elif res != ValidateResult.success:
             
             self.status_surface.fill(COLOR_GRAY)
             self.text_status(titles, gettext.translation(self.domain, localedir=LOCALEDIR, languages=langs))
             self.show()
-        if self.sound is not None:
-            if res == ValidateResult.success:
-                self.sound.play_status(SOUND_SUCCESS)
-            elif graced:
-                self.sound.play_status(SOUND_SUCCESS)
-            else:
-                self.sound.play_status(SOUND_FAILED)
+        
