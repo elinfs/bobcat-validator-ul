@@ -24,9 +24,9 @@ COLOR_GRAY = 83, 86, 90
 DEFAULT_FONT = "Roboto"
 DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
 OPEN_LOGO = os.path.dirname(__file__) + '/icons/open.png'
-APPROVED_LOGO = os.path.dirname(__file__) + '/icons/approved.jpg'
+APPROVED_LOGO = os.path.dirname(__file__) + '/icons/approved.png'
 DENIED_LOGO = os.path.dirname(__file__) + '/icons/denied.png'
-IDEL_LOGO = os.path.dirname(__file__) + '/icons/idle.jpg'
+IDEL_LOGO = os.path.dirname(__file__) + '/icons/idle.png'
 
 SOUND_FAILED = "failed"
 SOUND_GRACED = "graced"

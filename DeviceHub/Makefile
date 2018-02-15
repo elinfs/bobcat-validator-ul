@@ -16,7 +16,7 @@ upgrade-venv:: $(VENV)
 
 dist: wheel
 
-wheel: $(VENV) $(WHEELHOUSE) $(GENERATED)
+wheel: $(VENV) $(WHEELHOUSE)
 	$(VENV)/bin/python setup.py bdist_wheel --dist-dir $(WHEELHOUSE)
 
 install:
