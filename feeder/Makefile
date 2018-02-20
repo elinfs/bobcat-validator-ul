@@ -1,9 +1,6 @@
-PYTHON=		/usr/local/3.6.3/bin/python3.6
+PYTHON=		/usr/local/python/3.6.3/bin/python3.6
 SOURCE=		bobcat_feeder
 VENV=		venv
-MOSQUITTO=	mosquitto
-DISTDIRS=	*.egg-info build dist
-LOCALE_DIR=	$(SOURCE)/locale
 WHEELHOUSE=	../wheels
 
 $(WHEELHOUSE):
@@ -19,7 +16,7 @@ upgrade-venv:: $(VENV)
 
 dist: wheel
 
-wheel: $(VENV) $(WHEELHOUSE) $(GENERATED)
+wheel: $(VENV) $(WHEELHOUSE)
 	$(VENV)/bin/python setup.py bdist_wheel --dist-dir $(WHEELHOUSE)
 
 install:

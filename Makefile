@@ -1,4 +1,4 @@
-PYTHON=		/usr/local/3.6.3/bin/python3.6
+PYTHON=		/usr/local/python/3.6.3/bin/python3.6
 SUDO=		sudo
 
 VENV?=		${CURDIR}/venv
