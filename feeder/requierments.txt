@@ -1,6 +1,0 @@
-tzlocal
-wheel
-pynmea2
-hbmqtt
-aiohttp
-aiodns
