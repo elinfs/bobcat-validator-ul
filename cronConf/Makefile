@@ -1,5 +1,5 @@
 PYTHON=		/usr/local/3.6.3/bin/python3.6
-SOURCE=		twins_test
+SOURCE=		cron_conf
 VENV=		venv
 WHEELHOUSE=	../wheels
 
@@ -16,7 +16,7 @@ upgrade-venv:: $(VENV)
 
 dist: wheel
 
-wheel: $(VENV) $(WHEELHOUSE)
+wheel: $(VENV) $(WHEELHOUSE) $(GENERATED)
 	$(VENV)/bin/python setup.py bdist_wheel --dist-dir $(WHEELHOUSE)
 
 install:
@@ -27,6 +27,3 @@ clean:
 
 realclean: clean
 	rm -fr $(VENV)
-
-agent:
-	$(VENV)/bin/python $(SOURCE)/ReportConnectivity.py
