@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-from bobcat_validator import __version__
+from bobcat_feeder import __version__
 
 setup(
     name='bobcat_feeder',
@@ -15,7 +15,7 @@ setup(
         'bobcat_feeder',
     ],
     package_data={'bobcat_feeder': [
-        'schema/*.yaml',
+       
     ]},
     install_requires=[
         'aiodns',
@@ -30,7 +30,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "bobcat_validator = bobcat_feeder.main:main"
+            "bobcat_feeder = bobcat_feeder.main:main"
         ]
     }
 )
