@@ -1,9 +1,8 @@
 from azure.storage.blob import BlockBlobService
 
-
 def main():
     try:
-        import cron_conf.config as config
+        import config 
     except:
         raise ValueError('Please specify configuration settings in config.py.')
         
