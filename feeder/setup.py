@@ -19,14 +19,25 @@ setup(
     ]},
     install_requires=[
         'aiodns',
+        'aiofiles',
         'aiohttp',
+        'deepmerge',
         'hbmqtt',
+        'isodate',
+        'jsonschema',
+        'protobuf',
+        'pygame',
+        'pyjwkest',
         'pynmea2',
+        'pyserial',
+        'pyyaml',
         'setuptools',
-        'tzlocal'
+        'smbus2',
+        'typed-ast',
+        'tzlocal',
     ],
     data_files=[
-    
+        ('config', ['config.yaml'])
     ],
     entry_points={
         "console_scripts": [

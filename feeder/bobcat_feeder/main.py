@@ -1,82 +1,54 @@
 from typing import Dict
+import sys
 import argparse
-import asyncio
 import logging
-import json
-import pynmea2
-import datetime
-import pprint
-import socket
-import aiohttp
-from hbmqtt.client import MQTTClient
-from hbmqtt.mqtt.constants import QOS_2
+import asyncio
+import signal
+
+from bobcat_feeder.configuration import Configuration
+from bobcat_feeder.dispatcher import Dispatcher
+
+def setup_dispatcher(loop: asyncio.AbstractEventLoop):
+    """Setup dispatcher"""
+    dispatcher = Dispatcher(loop)    
+    dispatcher.add_device(device, dconfig)
+    return dispatcher
 
 def main():
-    asyncio.get_event_loop().run_until_complete(run())
+    """ Main function"""
 
-async def run():
-    mqtt = MQTTClient()
-    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serversocket.bind(('192.168.1.3', 10110))
-    serversocket.listen(5) # become a server socket, maximum 5 connections
-    while True:
-        print('loop')
-        connection, address = serversocket.accept()
-        print(address)
-        rawGpsData = connection.recv(4096)
-        data = get_mqtt_data(rawGpsData)        
-        connection.close()
-        await send_realtime(mqtt, "mqtt://127.0.0.1", data)
-        await asyncio.sleep(5)
+    parser = argparse.ArgumentParser(description='Bobcat Feeder')
 
-def get_gps_data(data: bytes):    
-    datastring = str(data)
-    print(datastring)
-    datastring = datastring[datastring.find('$GPRMC'):]
-    strArr = datastring.split('\\r\\n')
-    print(strArr[0])
-    return strArr[0]
+    parser.add_argument('--config',
+                        dest='config',
+                        metavar='filename',
+                        help='Bobcat Validator configuration file',
+                        default='/etc/bobcat/feeder.yaml')
+    parser.add_argument('--debug',
+                        dest='debug',
+                        action='store_true',
+                        help="Enable debugging")
 
-def get_mqtt_data(rawGps: str):
-    data = {}
+    args = parser.parse_args()
 
-    data['/service/v1/gps/rmc'] = get_gps_data(rawGps)
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
-    time = {
-            'iso8601': datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-    }
+    try:
+        config = Configuration.create_from_config_file(args.config)
+    except Exception as exc:
+        logging.critical("Fatal error reading configuration: %s", exc)
+        sys.exit(-1)
 
-    data["/service/v1/Validate/time"] = json.dumps(time)
+    loop = asyncio.get_event_loop()
 
-    journey = {
-            'line': '2te'
-    }
-
-    data["/service/v1/journey"] = json.dumps(journey)
-
-    stop = {
-        'GIDHpl': '2037'
-    }
-
-    data["/service/v1/lastStop"] = json.dumps(stop)    
-
-    next = {
-        'GIDHpl': '2038'
-    }
-
-    data["/service/v1/nextStop"] = json.dumps(next)        
-
-    return data
-
-async def send_realtime(mqtt, server: str, data: Dict):
-    
-    ret = await mqtt.connect(server)
-    logging.debug("MQTT connect to {} -> {}".format(server, ret))
-    print(str(data))
-    for topic, msg in data.items():
-        ret = await mqtt.publish(topic, msg.encode())
-        logging.debug("Published to MQTT topic {} -> {}".format(topic, ret))
-    await mqtt.disconnect()
+    try:
+        dispatcher = setup_dispatcher(loop)
+    except Exception as exc:
+        logging.debug("Dispatcher setup exception: %s", str(exc))
+        logging.critical("Fatal error during setup")
+        sys.exit(-1)
+    dispatcher.run()
 
 if __name__ == "__main__":
     main()
