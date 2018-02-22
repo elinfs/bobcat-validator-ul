@@ -14,7 +14,7 @@ class Listner:
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self) -> None:        
-        self.serversocket.bind((self.config.server, self.config.port))
+        self.serversocket.bind((self.config["server"], self.config["port"]))
         self.serversocket.listen(5) # become a server socket, maximum 5 connections
 
     def getPos(self) -> str:
