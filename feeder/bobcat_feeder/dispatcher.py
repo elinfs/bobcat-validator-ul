@@ -2,6 +2,7 @@ import asyncio
 import gettext
 import logging
 from typing import Any, Callable, Dict, List, Optional, Union
+from bobcat_feeder import Configuration
 
 class Dispatcher:
 
@@ -10,7 +11,6 @@ class Dispatcher:
         self.service = Service(config.service)
         self.loop = loop
         self.channels = {}  # type: Dict[str, List]
-        self.status_events = []  # type: List[StatusEvent]
         self.devices = {"event_queue": self.event_queue}  # type: Dict[str, Any]
         self.service.register_channels(self)        
 
@@ -22,12 +22,6 @@ class Dispatcher:
             self.devices[dev] = MQTTDevice(config, self)
         else:
             self.logger.error("Unknown input device configuration: {}".format(dev))
-
-    def create_status_event(self) -> StatusEvent:
-        """Create event object, set if we have a status change"""
-        res = StatusEvent(self.loop)
-        self.status_events.append(res)
-        return res
 
     def register_channel_function(self, channel: str, func: Callable) -> None:
         """Register channel function"""

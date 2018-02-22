@@ -26,8 +26,6 @@ setup(
         'isodate',
         'jsonschema',
         'protobuf',
-        'pygame',
-        'pyjwkest',
         'pynmea2',
         'pyserial',
         'pyyaml',
