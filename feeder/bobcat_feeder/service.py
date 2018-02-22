@@ -2,7 +2,6 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 from datetime import datetime, timedelta, timezone
 import json
 import logging
-from .protobuf.journey_pb2 import JourneyInfo, Stop
 from .data_packet import DataPacket
 from . import dispatcher
 

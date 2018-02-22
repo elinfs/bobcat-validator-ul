@@ -18,7 +18,7 @@ service:
 device:
   mqtt:
     server: mqtt://127.0.0.1/
-    config:      
+    #config:      
     input:
       service:
         topic: /service/v1/feeder/service
@@ -45,7 +45,7 @@ device:
     driver: bobcat_feeder.gps.router:Listner
     #driver: bobcat_feeder.gps.file:Listner
     driver_config:
-      server: 192.168.1.3    
+      server: "192.168.1.3"    
       port: 10110
       tcp: False
     output:

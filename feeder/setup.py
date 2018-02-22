@@ -13,6 +13,7 @@ setup(
     url='https://github.com/elinfs/bobcat-validator-ul',
     packages=[
         'bobcat_feeder',
+        'bobcat_feeder.gps'
     ],
     package_data={'bobcat_feeder': [
        

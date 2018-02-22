@@ -35,14 +35,14 @@ class Configuration:
     @classmethod
     def create_from_config_file(cls, filename: str=DEFAULT_CONF):
         """Load configuration as YAML"""
-        self.logger.debug("Reading configuration from %s", filename)
+        logging.debug("Reading configuration from %s", filename)
         with open(filename, "rt", encoding='utf-8') as file:
             config_dict = yaml.load(file)
         base_dir = os.path.dirname(filename)
         for pathname in config_dict.get('includes', []):
-            self.logger.debug("Including %s", pathname)
+            logging.debug("Including %s", pathname)
             for filename in glob.glob(pathname, recursive=False):
-                self.logger.debug("Reading partial configuration from %s", filename)
+                logging.debug("Reading partial configuration from %s", filename)
                 with open(filename, "rt", encoding='utf-8') as file:
                     data = yaml.load(file)
                     dict_merge(config_dict, data)

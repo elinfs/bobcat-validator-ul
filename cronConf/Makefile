@@ -1,4 +1,5 @@
-PYTHON=		/usr/local/python/3.6.3/bin/python3.6
+#PYTHON=		/usr/local/python/3.6.3/bin/python3.6
+PYTHON= python3
 SOURCE=		cron_conf
 VENV=		venv
 WHEELHOUSE=	../wheels

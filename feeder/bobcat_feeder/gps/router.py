@@ -14,7 +14,7 @@ class Listner:
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self) -> None:        
-        self.serversocket.bind((config.server, config.port))
+        self.serversocket.bind((self.config.server, self.config.port))
         self.serversocket.listen(5) # become a server socket, maximum 5 connections
 
     def getPos(self) -> str:
@@ -25,7 +25,7 @@ class Listner:
         return data
 
     def get_gps_data(data: bytes):    
-    datastring = str(data)    
-    datastring = datastring[datastring.find('$GPRMC'):]
-    strArr = datastring.split('\\r\\n')    
-    return strArr[0]
+        datastring = str(data)    
+        datastring = datastring[datastring.find('$GPRMC'):]
+        strArr = datastring.split('\\r\\n')    
+        return strArr[0]

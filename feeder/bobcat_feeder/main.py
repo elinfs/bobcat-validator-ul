@@ -8,10 +8,12 @@ import signal
 from bobcat_feeder.configuration import Configuration
 from bobcat_feeder.dispatcher import Dispatcher
 
-def setup_dispatcher(loop: asyncio.AbstractEventLoop):
+def setup_dispatcher(config: Configuration, loop: asyncio.AbstractEventLoop):
     """Setup dispatcher"""
-    dispatcher = Dispatcher(loop)    
-    dispatcher.add_device(device, dconfig)
+    dispatcher = Dispatcher(config, loop)
+    for device, dconfig in config.device.items():
+        logging.debug("Add dispatcher device %s", device)
+        dispatcher.add_device(device, dconfig)
     return dispatcher
 
 def main():
@@ -43,7 +45,7 @@ def main():
     loop = asyncio.get_event_loop()
 
     try:
-        dispatcher = setup_dispatcher(loop)
+        dispatcher = setup_dispatcher(config, loop)
     except Exception as exc:
         logging.debug("Dispatcher setup exception: %s", str(exc))
         logging.critical("Fatal error during setup")

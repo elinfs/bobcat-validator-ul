@@ -2,27 +2,27 @@ import asyncio
 import gettext
 import logging
 from typing import Any, Callable, Dict, List, Optional, Union
-from bobcat_feeder.configuration import Configuration
-from bobcat_feeder.mqtt_device import MQTTDevice
-from bobcat_feeder.base_device import BaseDevice
-from bobcat_feeder.data_packet import DataPacket
-from bobcat_feeder.gps_device import GpsDevice
-from bobcat_feeder.service import Service
+from .configuration import Configuration
+from .mqtt_device import MQTTDevice
+from .base_device import BaseDevice
+from .data_packet import DataPacket
+from .gps_device import GpsDevice
+from .service import Service
 
 class Dispatcher:
 
     def __init__(self, config: Configuration, loop: asyncio.AbstractEventLoop) -> None:
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
         self.service = Service(config.service)
-        self.loop = loop
+        self.loop = loop        
         self.channels = {}  # type: Dict[str, List]
-        self.devices = {"event_queue": self.event_queue}  # type: Dict[str, Any]
+        self.devices = {}  # type: Dict[str, Any]
         self.service.register_channels(self)        
 
     def add_device(self, dev: str, config: Dict) -> None:
         """Initialize and add device"""
         if dev == 'gps':
-            self.devices[dev] = DisplayDevice(config, self)
+            self.devices[dev] = GpsDevice(config, self)
         elif dev == 'mqtt':
             self.devices[dev] = MQTTDevice(config, self)
         else:
@@ -61,9 +61,6 @@ class Dispatcher:
                     self.logger.error("Output channel missing: %s", channel)
         else:
             self.logger.error("No output available for %s", data)
-
-    def is_graced_result(self, result: ValidateResult) -> bool:
-        return result.name in self.graced
 
     def run(self) -> None:
         """Run all device tasks and data gathering tasks"""

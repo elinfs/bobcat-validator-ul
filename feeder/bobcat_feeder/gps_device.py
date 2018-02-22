@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Tuple
 from types import CoroutineType, FunctionType
 import socket
 import aiohttp
+import asyncio
 import functools
 import datetime
 import json
@@ -15,8 +16,9 @@ from .data_packet import DataPacket
 DEFAULT_DRIVER = "bobcat_feeder.gps.router:Listner"
 
 class GpsDevice(BaseDevice):
-    def __init__(self, config: Dict, dispatcher: 'dispatcher.Dispatcher') -> None:
-        super().__init__(self, config, dispatcher)
+    def __init__(self, config: Dict, dispatcher: 'dispatcher.Dispatcher') -> None:                
+        super().__init__(config, dispatcher)
+        self.logger.debug("Init gps device")
         self.dispatcher = dispatcher
         self.loop = dispatcher.loop
         self.done = False        
@@ -41,5 +43,8 @@ class GpsDevice(BaseDevice):
                         res = DataPacket.create_data_packet(pos, 'nmea_string')
                         self.dispatcher.do_output(self.outputs, res)                        
                         await asyncio.sleep(self.period)
+            except OSError as ose:
+                self.logger.error("Gps device os error", exc_info=ose)
+                await asyncio.sleep(self.period)
             except Exception as ce:
                 self.logger.error("Gps device exception", exc_info=ce)
