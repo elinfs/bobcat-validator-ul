@@ -32,6 +32,16 @@ class Configuration:
         """Add base path to relative file names"""
         return os.path.join(self.base_dir, file)
 
+    def load_external_data(self) -> None:
+        """Reload dynamic configuration"""
+
+        # if 'stops_file' in self.realtime:
+        #     filename = self.filename(self.realtime['stops_file'])
+        #     self.realtime['stops'] = TransportStopCollection(self.read_external_data_list(filename, 'stops'))
+        #     self.logger.info("Loaded %d stops from %s",
+        #                      self.realtime['stops'].count(),
+        #                      self.realtime['stops_file'])
+
     @classmethod
     def create_from_config_file(cls, filename: str=DEFAULT_CONF):
         """Load configuration as YAML"""
