@@ -2,7 +2,7 @@ import asyncio
 import gettext
 import logging
 from typing import Any, Callable, Dict, List, Optional, Union
-from bobcat_feeder import Configuration
+from bobcat_feeder.configuration import Configuration
 
 class Dispatcher:
 
