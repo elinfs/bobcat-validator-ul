@@ -102,7 +102,9 @@ class MQTTDevice(BaseDevice):
             raise RuntimeError("channel_mqtt_gps: Unknown input format: {}".format(data.format))
         self.logger.debug("gps message published: %s", res)
         output_format = self.config['output']['mqtt_gps']['format']
-        if output_format == "json":
+        if output_format == "nmea_string":
+            out = res
+        elif output_format == "json":
             out = json.dumps(res).encode()
         elif output_format == "protobuf":
             raise RuntimeError("channel_mqtt_gps: protobuf mqtt_gps output format not supported")
@@ -115,7 +117,7 @@ class MQTTDevice(BaseDevice):
         if data.format == 'nmea_string':
             #convert gps to time iso8602
             nmeastring = pynmea2.parse(data.data)
-            res = datetime.combine(nmeastring.datestamp, nmeastring.timestamp).strftime('%Y%m%dT%H%M%SZ')            
+            res['iso8601'] = datetime.combine(nmeastring.datestamp, nmeastring.timestamp).strftime('%Y%m%dT%H%M%SZ')            
         else:
             raise RuntimeError("channel_mqtt_time: Unknown input format: {}".format(data.format))
         self.logger.debug("time message published: %s", res)

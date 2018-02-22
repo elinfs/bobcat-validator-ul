@@ -37,7 +37,7 @@ device:
         format: json
       mqtt_gps:
         topic: /service/v1/gps/rmc
-        format: json
+        format: nmea_string
       mqtt_time:
         topic: /service/v1/Validate/time
         format: json

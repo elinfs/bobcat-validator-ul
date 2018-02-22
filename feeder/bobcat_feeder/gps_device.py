@@ -35,16 +35,17 @@ class GpsDevice(BaseDevice):
         while not self.done:
             try:
                 self.gps.connect()
-                last_msg = ""
+                last_msg = ""                
                 while not self.done:                    
                     pos = self.gps.getPos()
                     if pos is not last_msg:
                         last_msg = pos
                         res = DataPacket.create_data_packet(pos, 'nmea_string')
                         self.dispatcher.do_output(self.outputs, res)                        
-                        await asyncio.sleep(self.period)
+                    await asyncio.sleep(self.period)
             except OSError as ose:
-                self.logger.error("Gps device os error", exc_info=ose)
-                await asyncio.sleep(self.period)
+                self.logger.error("Gps device os error", exc_info=ose)                
             except Exception as ce:
                 self.logger.error("Gps device exception", exc_info=ce)
+            self.gps.disconnect()
+            await asyncio.sleep(self.period)            
