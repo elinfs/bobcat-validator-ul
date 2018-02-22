@@ -2,7 +2,11 @@ import asyncio
 import gettext
 import logging
 from typing import Any, Callable, Dict, List, Optional, Union
-from bobcat_feeder.configuration import Configuration
+from .configuration import Configuration
+from .mqtt_device import MQTTDevice
+from .base_device import BaseDevice
+from .data_packet import DataPacket
+from .gps_device import GpsDevice
 
 class Dispatcher:
 
