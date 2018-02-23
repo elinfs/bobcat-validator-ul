@@ -17,8 +17,7 @@ DEFAULT_DRIVER = "bobcat_feeder.gps.router:Listner"
 
 class GpsService(BaseService):
     def __init__(self, config: Dict, dispatcher: 'dispatcher.Dispatcher') -> None:                
-        super().__init__(config, dispatcher)
-        self.logger.debug("Init gps device")
+        super().__init__(config, dispatcher)        
         self.dispatcher = dispatcher
         self.loop = dispatcher.loop
         self.done = False        
@@ -30,6 +29,8 @@ class GpsService(BaseService):
                                 gps_class_str)
         self.gps = gps_class(config.get('driver_config'), self)        
         self.period = config["period"]
+        self.logger.debug(self.__class__.__name__ + " init done.")
+
     async def run(self) -> None:        
         self.logger.debug("Listen to gps")
         await asyncio.sleep(self.period)         

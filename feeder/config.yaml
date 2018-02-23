@@ -21,7 +21,7 @@ service:
       service:
         format: json
     output:      
-      - route
+      #- route
       - mqtt_journey
   mqtt:
     server: mqtt://127.0.0.1/

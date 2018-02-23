@@ -22,7 +22,8 @@ class JourneyService(BaseService):
                 self.register_channel_function(input_channel, input_config)
         else:
             self.logger.debug('No MQTT output channels')        
-
+        self.logger.debug(self.__class__.__name__ + " init done.")
+        
     def channel_service(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> None:
         """Receive journey information"""
         if data.format == 'json':
@@ -53,5 +54,7 @@ class JourneyService(BaseService):
         return False    
 
     async def run(self):        
-        self.dispatcher.do_output('mqtt_journey', DataPacket.create_data_packet(self.service, 'json'))
-        await asyncio.sleep(self.config['period'])
+        while not self.done:            
+            await asyncio.sleep(self.config['period'])
+            self.dispatcher.do_output('mqtt_journey', DataPacket.create_data_packet(self.service, 'json'))
+            

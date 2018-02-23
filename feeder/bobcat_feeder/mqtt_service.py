@@ -50,6 +50,7 @@ class MQTTService(BaseService):
         else:
             self.logger.debug('No MQTT output channels')
         self.mqtt = None  # type: MQTTClient
+        self.logger.debug(self.__class__.__name__ + " init done.")
 
     async def run(self) -> None:
         """Service message receive loop"""
