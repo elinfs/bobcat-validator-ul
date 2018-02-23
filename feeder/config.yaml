@@ -13,18 +13,23 @@ logging:
       format: '%(asctime)s %(name)s %(levelname)s %(message)s'
 
 service:
-  route_url: "https://api.ul.se/api/v3/line/"
-
-device:
+  journey:
+    route_url: "https://api.ul.se/api/v3/line/"
+    period: 30
+    buss_id_url: "http://who.am.i"
+    input:
+      service:
+        format: json
+    output:      
+      - route
+      - mqtt_journey
   mqtt:
     server: mqtt://127.0.0.1/
     #config:      
     input:
       service:
         topic: /service/v1/feeder/service
-        format: json      
-        output:
-          - mqtt_journey                
+        format: json                              
     output:
       mqtt_journey:
         topic: /service/v1/journey

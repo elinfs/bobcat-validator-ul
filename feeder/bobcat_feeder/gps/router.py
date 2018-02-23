@@ -7,21 +7,21 @@ import pynmea2
 from typing import Dict, List, Optional
 
 class Listner:
-    def __init__(self, config: Dict, device: 'GpsDevice') -> None:
+    def __init__(self, config: Dict, service: 'GpsDevice') -> None:
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
-        self.device = device
+        self.service = service
         self.config = config        
         self.serversocket = None
 
     def connect(self) -> None:  
-        if self.socketserver is None:     
+        if self.serversocket is None:     
             self.logger.debug("Gps server: " + self.config["server"] + " port: " + str(self.config["port"]))             
             self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.serversocket.bind((self.config["server"], self.config["port"]))
             self.serversocket.listen(5) # become a server socket, maximum 5 connections
         else:
             self.logger.debug("Gps connection excists")
-            
+
     def disconnect(self) -> None:
         self.logger.debug("Gps connection closed!")
         self.serversocket.close()

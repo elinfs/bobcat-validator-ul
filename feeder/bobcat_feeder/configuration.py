@@ -24,8 +24,7 @@ class Configuration:
 
         self.logging = conf.get('logging')
         self.logger = logging.getLogger(__name__).getChild(self.__class__.__name__)
-        self.device = conf['device']  # type: Dict[str, Dict]                        
-        self.service = conf.get('service', {})
+        self.service = conf['service']  # type: Dict[str, Dict]                                
         self.load_external_data()
 
     def filename(self, file):

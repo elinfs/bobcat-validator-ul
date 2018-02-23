@@ -11,9 +11,9 @@ from bobcat_feeder.dispatcher import Dispatcher
 def setup_dispatcher(config: Configuration, loop: asyncio.AbstractEventLoop):
     """Setup dispatcher"""
     dispatcher = Dispatcher(config, loop)
-    for device, dconfig in config.device.items():
-        logging.debug("Add dispatcher device %s", device)
-        dispatcher.add_device(device, dconfig)
+    for service, sconfig in config.service.items():
+        logging.debug("Add dispatcher service %s", service)
+        dispatcher.add_service(service, sconfig)
     return dispatcher
 
 def main():
