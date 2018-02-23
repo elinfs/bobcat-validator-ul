@@ -21,7 +21,7 @@ service:
       service:
         format: json
     output:      
-      #- route
+      - route
       - mqtt_journey
   mqtt:
     server: mqtt://127.0.0.1/
@@ -56,6 +56,17 @@ service:
     output:
       - mqtt_gps
       - mqtt_time
+      - geofence
     period: 5
+  stop:
+    input:
+      geofence:
+        radius: 100
+        format: nmea_string
+      route:
+        format: json
+    output:
+      - mqtt_last_stop
+      - mqtt_next_stop
 
         
