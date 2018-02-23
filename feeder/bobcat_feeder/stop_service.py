@@ -45,6 +45,6 @@ class StopService(BaseService):
     async def run(self):
         while not self.done:
             await asyncio.sleep(20)
-            slef.logger.debug("Im alive")
+            self.logger.debug("Im alive")
 
 

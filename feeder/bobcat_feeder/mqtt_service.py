@@ -157,7 +157,7 @@ class MQTTService(BaseService):
         return self.mqtt.publish(self.config['output']['mqtt_journey']['topic'], out, qos=qos)
 
     def channel_mqtt_next_stop(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> CoroutineType:
-        if data.format == 'str':
+        if data.format == 'json':
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_next_stop: Unknown input format: {}".format(data.format))
@@ -173,7 +173,7 @@ class MQTTService(BaseService):
         return self.mqtt.publish(self.config['output']['mqtt_next_stop']['topic'], out, qos=qos)
     
     def channel_mqtt_last_stop(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> CoroutineType:
-        if data.format == 'str':
+        if data.format == 'json':
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_last_stop: Unknown input format: {}".format(data.format))

@@ -6,6 +6,7 @@ from .configuration import Configuration
 from .mqtt_service import MQTTService
 from .base_service import BaseService
 from .data_packet import DataPacket
+from .stop_service import StopService
 from .gps_service import GpsService
 from .journey_service import JourneyService
 
@@ -25,6 +26,8 @@ class Dispatcher:
             self.services[service] = MQTTService(config, self)
         elif service == 'journey':
             self.services[service] = JourneyService(config, self)
+        elif service == 'stop':
+            self.services[service] = StopService(config, self)
         else:
             self.logger.error("Unknown input device configuration: {}".format(dev))
 
