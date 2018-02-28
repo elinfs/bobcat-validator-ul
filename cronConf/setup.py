@@ -15,11 +15,13 @@ setup(
         'cron_conf',
     ],
     package_data={'cron_conf': [
-       
+       'schema/*.yaml'
     ]},
     install_requires=[                
         'azure-storage-blob',
-        'setuptools'
+        'setuptools',
+        'pyyaml',
+        'jsonschema'
     ],
     data_files=[
     
