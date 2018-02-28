@@ -34,8 +34,6 @@ class JourneyService(BaseService):
         output_format = self.config['input']['service']['format']        
         if output_format == "json":
             service = json.loads(self.service)  
-        elif output_format == "protobuf":
-            raise RuntimeError("Journey input: protobuf service output format not supported")
         else:
             raise RuntimeError("Journey input: Unknown output format: {}".format(output_format))
         try:

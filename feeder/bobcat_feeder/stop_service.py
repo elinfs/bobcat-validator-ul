@@ -12,7 +12,7 @@ from .data_packet import DataPacket
 class GeoPoint:
     self.long
     self.lat
-    def __init__(self, long: float, lat: float):
+    def __init__(self, lat: float, long: float):
         self.long = math.radians(long)
         self.lat = math.radians(lat)
 
@@ -20,7 +20,9 @@ class StopService(BaseService):
 
     def __init__(self, config: Dict, dispatcher: 'dispatcher.Dispatcher') -> None:
         super().__init__(config, dispatcher)
+        self.latestStops = []
         self.outputs = config["output"]
+        self.geofenceradius = config["geofenceradius"]
         self.service = {
             'line' : 'dummy',
             'route': []
@@ -55,9 +57,23 @@ class StopService(BaseService):
             await asyncio.sleep(20)
             self.logger.debug("Im alive")
 
-    def isInGeofence(centerPoint: GeoPoint, point: GeoPoint, radius: int) -> bool:  
+    def isInGeofence(self, stopPoint: GeoPoint, point: GeoPoint) -> bool:  
         """earthRadius is the radius of the earth in km"""
         earthRadius = 6371
-        dist = math.acos(math.sin(centerPoint.lat) * math.sin(point.lat) + math.cos(centerPoint.lat) * math.cos(point.lat) * math.cos(centerPoint.long - point.long)) * earthRadius
-        return dist < radius
+        dist = math.acos(math.sin(stopPoint.lat) * math.sin(point.lat) + math.cos(stopPoint.lat) * math.cos(point.lat) * math.cos(stopPoint.long - point.long)) * earthRadius
+        return dist * 1000 < self.geofenceradius
 
+    def findStop(self, point: GeoPoint) -> int:
+        for stop in self.service.route:
+            if isInGeofence(GeoPoint(stop.lat, stop.long), point, fenceRadius):
+                return stop.id
+        return -1
+    
+    def validateStop(self, point: GeoPoint) -> int:
+        stop = findStop(point)
+        if stop is not self.latestStops[-1] and stop is not -1:
+            if len(self.latestStops) >= 3:
+                self.latestStops.pop(0)
+            self.latestStops.append(stop)
+            
+            
