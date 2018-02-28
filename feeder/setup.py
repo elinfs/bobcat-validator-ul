@@ -36,7 +36,7 @@ setup(
         'tzlocal',
     ],
     data_files=[
-        ('config', ['config.yaml'])
+        ('examples', ['examples/config.yaml'])
     ],
     entry_points={
         "console_scripts": [
