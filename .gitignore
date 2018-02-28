@@ -19,3 +19,4 @@ broker.pid
 .tox
 *.mo
 .mypy_cache
+requirements.txt
