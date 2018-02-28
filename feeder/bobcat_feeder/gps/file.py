@@ -17,10 +17,10 @@ class Listner:
             route = json.load(file)
             lastPoint = None
             for point in route["path"]:
-                
+
 
     def disconnect(self) -> None:        
 
     def getPos(self) -> str:
         self.logger.debug("Gps pos requested!")        
-        return data
+        return None
