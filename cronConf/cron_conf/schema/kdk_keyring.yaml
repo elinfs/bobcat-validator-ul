@@ -1,0 +1,46 @@
+$schema: http://json-schema.org/schema#
+
+type: object
+required:
+  - keys
+properties:
+  keys:
+    type: array
+    items:
+      oneOf:
+      - $ref: '#/definitions/jwt_sym'
+
+definitions:
+  jwt:
+    title: JWT
+    type: object
+    required:
+      - pid
+      - kid
+      - kty
+    properties:
+      pid:
+        title: Participant ID
+        type: string
+        format: int64
+      kid:
+        title: Key identifier
+        type: string
+      kty:
+        title: Key type
+        type: string
+  jwt_sym:
+    title: Symmetric key
+    allOf:
+      - $ref: '#/definitions/jwt'
+      - type: object
+        properties:
+          kty:
+            enum:
+              - oct
+        required:
+          - k
+        properties:
+          k:
+            title: Key value
+            type: string

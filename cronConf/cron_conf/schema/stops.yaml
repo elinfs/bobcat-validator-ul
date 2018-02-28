@@ -1,0 +1,49 @@
+$schema: http://json-schema.org/schema#
+
+type: array
+items:
+  type: object
+  additionalProperties: false
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    geopos:
+      title: Stop position
+      type: object
+      additionalProperties: false
+      required:
+        - lat
+        - long
+      properties:
+        lat:
+          type: number
+        long:
+          type: number
+    tickleEnv:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - pid
+          - stopArea
+        properties:
+          pid:
+            type: string
+            format: int64
+          stopArea:
+            anyOf:
+             - type: string
+             - type: array
+               items:
+                type: string
+          zone:
+            anyOf:
+             - type: string
+             - type: array
+               items:
+                type: string

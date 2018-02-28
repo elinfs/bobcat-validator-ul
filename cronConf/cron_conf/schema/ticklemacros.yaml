@@ -1,0 +1,37 @@
+$schema: http://json-schema.org/schema#
+
+type: array
+items:
+  $ref: '#/definitions/tickleMacros'
+
+# from BoB Validation API
+definitions:
+  tickleMacros:
+    type: object
+    required:
+      - pid
+      - serial
+      - macros
+    properties:
+      pid:
+        type: string
+        format: int64
+      serial:
+        type: integer
+        format: int64
+      macros:
+        type: array
+        items:
+          $ref: '#/definitions/tickleMacro'
+  tickleMacro:
+    type: object
+    required:
+      - name
+      - condition
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      condition:
+        type: string

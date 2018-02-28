@@ -1,0 +1,29 @@
+$schema: http://json-schema.org/schema#
+
+type: array
+items:
+  type: object
+  additionalProperties: false
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    from:
+      type: string
+    to:
+      type: string
+    tickleEnv:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - pid
+          - service
+        properties:
+          pid:
+            type: string
+            format: int64
+          service:
+            type: string

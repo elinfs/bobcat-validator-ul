@@ -1,0 +1,77 @@
+$schema: http://json-schema.org/schema#
+
+type: object
+required:
+  - keys
+properties:
+  keys:
+    type: array
+    items:
+      oneOf:
+      - $ref: '#/definitions/jwt_ec'
+      - $ref: '#/definitions/jwt_rsa'
+
+definitions:
+  jwt:
+    title: JWT
+    type: object
+    required:
+      - pid
+      - kid
+      - kty
+    properties:
+      pid:
+        title: Participant ID
+        type: string
+        format: int64
+      kid:
+        title: Key identifier
+        type: string
+      kty:
+        title: Key type
+        type: string
+  jwt_ec:
+    title: EC key
+    allOf:
+      - $ref: '#/definitions/jwt'
+      - type: object
+        properties:
+          kty:
+            enum:
+              - EC
+          crv:
+            title: EC curve
+            enum:
+              - P-256
+              - P-384
+              - P-521
+      - type: object
+        required:
+          - x
+          - y
+        properties:
+          x:
+            title: EC X coordinate
+            type: string
+          y:
+            title: EC Y coordinate
+            type: string
+  jwt_rsa:
+    title: RSA key
+    allOf:
+      - $ref: '#/definitions/jwt'
+      - type: object
+        properties:
+          kty:
+            enum:
+              - RSA
+        required:
+          - n
+          - e
+        properties:
+          n:
+            title: RSA modulus
+            type: string
+          e:
+            title: RSA exponent
+            type: string
