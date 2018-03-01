@@ -17,6 +17,9 @@ upgrade-venv:: $(VENV)
 
 dist: wheel
 
+run: $(VENV)
+	env PYTHONPATH=`pwd` $(VENV)/bin/python cron_conf/main.py --debug
+
 wheel: $(VENV) $(WHEELHOUSE) $(GENERATED)
 	$(VENV)/bin/python setup.py bdist_wheel --dist-dir $(WHEELHOUSE)
 

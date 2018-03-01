@@ -17,6 +17,9 @@ upgrade-venv:: $(VENV)
 
 dist: wheel
 
+server: $(VENV)
+	env PYTHONPATH=`pwd` $(VENV)/bin/python bobcat_feeder/main.py --config=example/config.yaml --debug
+
 wheel: $(VENV) $(WHEELHOUSE)
 	$(VENV)/bin/python setup.py bdist_wheel --dist-dir $(WHEELHOUSE)
 
