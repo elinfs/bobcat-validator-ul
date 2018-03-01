@@ -36,11 +36,12 @@ class CronConf:
             self.logger.debug('Blob name: ' + blob.name)
             try:
                 data = block_blob_service.get_blob_to_text(config.STORAGE_CONTAINER, blob.name)
-                self.schema.validate(json.load(data.content, encoding = 'utf-8'), blob.name[:-5])
+                self.logger.debug('Downloaded file: ' + blob.name)
+                self.schema.validate(json.loads(data.content, encoding = 'utf-8'), blob.name[:-5])
                 self.logger.debug('Schema is ok for: ' + blob.name)
                 with open(config.DYNAMIC_FILES_LOCAL_PATH + blob.name, 'w+', encoding = 'utf-8') as file:
                     file.write(data.content)
-                    self.logger.debug('File updated: ' + config.STORAGE_CONTAINER + blob.name)
+                    self.logger.debug('File updated: ' + config.DYNAMIC_FILES_LOCAL_PATH + blob.name)
             except json.decoder.JSONDecodeError:
                 self.logger.critical("Error loading JSON data from %s", blob.name)            
             except jsonschema.exceptions.ValidationError as e:
