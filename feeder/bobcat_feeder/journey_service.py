@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import logging
 import asyncio
+import aiohttp
 from .data_packet import DataPacket
 from .base_service import BaseService
 from . import dispatcher
@@ -27,7 +28,7 @@ class JourneyService(BaseService):
     def channel_service(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> None:
         """Receive journey information"""
         if data.format == 'json':
-            if is_service_updated(data.as_str()) is not True:
+            if is_service_updated(data.as_str()) not True:
                 return
         else:
             raise RuntimeError("Service: Unknown input format: {}".format(data.format))
@@ -45,9 +46,12 @@ class JourneyService(BaseService):
             self.logger.error("Missing service data for %s", journey, exc_info=ke)
 
     def is_service_updated(self, service: str) -> bool:
-        if self.service.line is not service:        
-            self.service.line = service
-            self.logger.info("Got route for service: " + service)
+        if self.service['line'] is not service:        
+            self.service['line'] = service
+            res = yield from aiohttp.request('get', self.config["route_url"] + service)
+            data = yield from res.json()
+            service['route'] = data['pointsOnRoute']
+            self.logger.info("Got route for service: " + service + " | " + data['description'])
             return True
         return False    
 
