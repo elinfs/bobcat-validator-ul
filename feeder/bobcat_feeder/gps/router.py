@@ -30,6 +30,8 @@ class Listner:
     def getPos(self) -> str:
         self.logger.debug("Gps pos requested!")
         connection, address = self.serversocket.accept()        
+        self.logger.debug(connection)
+        self.logger.debug(address)
         rawGpsData = connection.recv(4096)
         data = self.get_gps_data(rawGpsData)        
         connection.close()

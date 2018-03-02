@@ -28,7 +28,7 @@ class JourneyService(BaseService):
     def channel_service(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> None:
         """Receive journey information"""
         if data.format == 'json':
-            if is_service_updated(data.as_str()) not True:
+            if is_service_updated(data.as_str()) is not True:
                 return
         else:
             raise RuntimeError("Service: Unknown input format: {}".format(data.format))

@@ -3,7 +3,8 @@ PYTHON=		python3
 SOURCE=		bobcat_feeder
 VENV=		venv
 WHEELHOUSE=	../wheels
-
+DISTDIRS=	*.egg-info build dist
+CLEANFILES=	$(DISTDIRS)
 $(WHEELHOUSE):
 		mkdir $@
 

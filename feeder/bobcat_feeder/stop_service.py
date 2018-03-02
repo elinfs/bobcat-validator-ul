@@ -11,9 +11,7 @@ from .data_packet import DataPacket
 
 DUMMYSTOP = { 'GIDHpl': 'dummy_stop' }
 
-class GeoPoint:
-    self.long
-    self.lat
+class GeoPoint:    
     def __init__(self, lat: float, long: float):
         self.long = math.radians(long)
         self.lat = math.radians(lat)
@@ -55,8 +53,8 @@ class StopService(BaseService):
             raise RuntimeError("Service: Unknown input format: {}".format(data.format))        
         currentStop = self.findStop(GeoPoint(nmea.latitude, nmea.longitude))
         if currentStop is not None:
-            dispatcher.do_output('mqtt_last_stop' DataPacket.create_data_packet({ ' GIDHpl': currentStop}, 'json'))
-            dispatcher.do_output('mqtt_next_stop' DataPacket.create_data_packet(self.getNextStop(currentStop), 'json'))
+            dispatcher.do_output('mqtt_last_stop', DataPacket.create_data_packet({ ' GIDHpl': currentStop}, 'json'))
+            dispatcher.do_output('mqtt_next_stop', DataPacket.create_data_packet(self.getNextStop(currentStop), 'json'))
 
     async def run(self):
         while not self.done:

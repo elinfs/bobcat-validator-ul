@@ -5,8 +5,8 @@ import logging
 import asyncio
 import signal
 
-import Configuration
-import Dispatcher
+from bobcat_feeder.configuration import Configuration
+from bobcat_feeder.dispatcher import Dispatcher
 
 def setup_dispatcher(config: Configuration, loop: asyncio.AbstractEventLoop):
     """Setup dispatcher"""

@@ -3,6 +3,7 @@ aiofiles
 aiohttp
 asynctest>=0.11.1
 coverage
+deepmerge
 green
 hbmqtt
 isodate
