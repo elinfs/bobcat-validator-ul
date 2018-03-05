@@ -20,3 +20,4 @@ broker.pid
 *.mo
 .mypy_cache
 requirements.txt
+test/*

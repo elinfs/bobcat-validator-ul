@@ -36,12 +36,14 @@ class GpsService(BaseService):
         await asyncio.sleep(self.period)         
         while not self.done:
             try:
-                self.gps.connect()
+                await self.gps.connect()
                 last_msg = ""                
                 while not self.done:                    
                     pos = self.gps.getPos()
-                    if pos is not last_msg:
+                    self.logger.debug(pos + str(type(pos)))
+                    if pos is not last_msg:                        
                         last_msg = pos
+                        self.logger.debug('new msg published: ' + pos)
                         res = DataPacket.create_data_packet(pos, 'nmea_string')
                         self.dispatcher.do_output(self.outputs, res)                        
                     await asyncio.sleep(self.period)

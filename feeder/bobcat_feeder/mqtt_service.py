@@ -101,7 +101,7 @@ class MQTTService(BaseService):
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_gps: Unknown input format: {}".format(data.format))
-        self.logger.debug("gps message published: %s", res)
+        self.logger.info("gps message published: %s", res)
         output_format = self.config['output']['mqtt_gps']['format']
         if output_format == "nmea_string":
             out = res.encode()
@@ -129,7 +129,7 @@ class MQTTService(BaseService):
             
         else:
             raise RuntimeError("channel_mqtt_time: Unknown input format: {}".format(data.format))
-        self.logger.debug("time message published: %s", res)
+        self.logger.info("time message published: %s", res)
         output_format = self.config['output']['mqtt_time']['format']
         if output_format == "json":
             out = json.dumps(res).encode()
@@ -145,7 +145,7 @@ class MQTTService(BaseService):
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_journey: Unknown input format: {}".format(data.format))
-        self.logger.debug("journey message published: %s", res)
+        self.logger.info("journey message published: %s", res)
         output_format = self.config['output']['mqtt_journey']['format']
         if output_format == "json":
             out = json.dumps(res).encode()
@@ -161,7 +161,7 @@ class MQTTService(BaseService):
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_next_stop: Unknown input format: {}".format(data.format))
-        self.logger.debug("next_stop message published: %s", res)
+        self.logger.info("next_stop message published: %s", res)
         output_format = self.config['output']['mqtt_next_stop']['format']
         if output_format == "json":
             out = json.dumps(res).encode()
@@ -177,7 +177,7 @@ class MQTTService(BaseService):
             res = data.data
         else:
             raise RuntimeError("channel_mqtt_last_stop: Unknown input format: {}".format(data.format))
-        self.logger.debug("last_stop message published: %s", res)
+        self.logger.info("last_stop message published: %s", res)
         output_format = self.config['output']['mqtt_last_stop']['format']
         if output_format == "json":
             out = json.dumps(res).encode()

@@ -12,7 +12,8 @@ class JourneyService(BaseService):
     def __init__(self, config: Dict, dispatcher: 'dispatcher.Dispatcher') -> None:                
         super().__init__(config, dispatcher)
         self.config = config
-        self.dispatcher = dispatcher        
+        self.dispatcher = dispatcher    
+        self.service_updated = True       
         self.outputs = config["output"]
         self.service = {
             'line' : 'dummy',
@@ -26,37 +27,40 @@ class JourneyService(BaseService):
         self.logger.debug(self.__class__.__name__ + " init done.")
         
     def channel_service(self, data: DataPacket, dispatcher: 'dispatcher.Dispatcher', config: Dict) -> None:
-        """Receive journey information"""
-        if data.format == 'json':
-            if is_service_updated(data.as_str()) is not True:
-                return
+        """Receive journey information"""        
+        if data.format == 'json':            
+            service = json.loads(data.as_str())         
+            self.logger.debug('channel_service called: ' + data.as_str())
+            if self.service["line"] != service["line"]:
+                self.service = service
+                self.service_updated = True
         else:
             raise RuntimeError("Service: Unknown input format: {}".format(data.format))
-        output_format = self.config['input']['service']['format']        
-        if output_format == "json":
-            service = json.loads(self.service)  
+        
+    async def get_service(self):              
+        if self.service_updated is True and self.service['line'] != 'dummy':   
+            self.service_updated = False                 
+            async with aiohttp.ClientSession() as session:
+                url = self.config["route_url"] + self.service['line'] 
+                self.logger.debug("Service url: " + url)
+                async with session.get(url) as response:            
+                    data = await response.json()
+            self.service['route'] = data['pointsOnRoute']
+            self.logger.info("Got route for service: " + self.service['line'] + " | " + data['description'])     
+            output_format = self.config['input']['service']['format']        
+            if output_format == "json":
+                service = json.dumps(self.service).encode()
+            else:
+                raise RuntimeError("Journey input: Unknown output format: {}".format(output_format))
+            try:
+                self.logger.debug("Got service: %s", service)                            
+                self.dispatcher.do_output(self.outputs, DataPacket.create_data_packet(service, output_format))
+            except KeyError as ke:
+                self.logger.error("Missing service data for %s", journey, exc_info=ke)               
         else:
-            raise RuntimeError("Journey input: Unknown output format: {}".format(output_format))
-        try:
-            self.logger.debug("Got service: %s", service)
-            
-            if service is not self.service:
-                dispatcher.do_output(self.outputs, DataPacket.create_data_packet(service, output_format))
-        except KeyError as ke:
-            self.logger.error("Missing service data for %s", journey, exc_info=ke)
-
-    def is_service_updated(self, service: str) -> bool:
-        if self.service['line'] is not service:        
-            self.service['line'] = service
-            res = yield from aiohttp.request('get', self.config["route_url"] + service)
-            data = yield from res.json()
-            service['route'] = data['pointsOnRoute']
-            self.logger.info("Got route for service: " + service + " | " + data['description'])
-            return True
-        return False    
+            self.dispatcher.do_output('mqtt_journey', DataPacket.create_data_packet(self.service, 'json'))
 
     async def run(self):        
         while not self.done:            
+            await self.get_service()            
             await asyncio.sleep(self.config['period'])
-            self.dispatcher.do_output('mqtt_journey', DataPacket.create_data_packet(self.service, 'json'))
-            
