@@ -1,0 +1,7 @@
+identification:
+  validator_id: "78:4f:43:65:d0:e0"
+  location: CFS027
+  sublocation: trunk
+
+authentication:
+  entity_id: sogkit.val100.bob.ul.se

@@ -1,0 +1,20 @@
+[
+	{
+		"pid": "42",
+		"blacklistEntries": [
+			{
+				"blacklistEntryId": 1,
+				"ticketId": "xyzzy",
+				"expire": "1973-06-14T20:00:00Z"
+			},
+			{
+				"blacklistEntryId": 2,
+				"travellerId": "xyzzy"
+			},
+			{
+				"blacklistEntryId": 3,
+				"tokenId": "xyzzy"
+			}
+		]
+	}
+]

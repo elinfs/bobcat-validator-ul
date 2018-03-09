@@ -22,11 +22,11 @@ COLOR_YELLOW = 241, 200, 0
 COLOR_GRAY = 83, 86, 90
 
 DEFAULT_FONT = "Roboto"
-DEFAULT_LOGO = os.path.dirname(__file__) + '/ul.png'
-OPEN_LOGO = os.path.dirname(__file__) + '/icons/open.png'
-APPROVED_LOGO = os.path.dirname(__file__) + '/icons/approved.png'
-DENIED_LOGO = os.path.dirname(__file__) + '/icons/denied.png'
-IDEL_LOGO = os.path.dirname(__file__) + '/icons/idle.png'
+DEFAULT_LOGO = os.path.dirname(__file__) + '/ul/ul.png'
+OPEN_LOGO = os.path.dirname(__file__) + '/ul/icons/open.png'
+APPROVED_LOGO = os.path.dirname(__file__) + '/ul/icons/approved.png'
+DENIED_LOGO = os.path.dirname(__file__) + '/ul/icons/denied.png'
+IDEL_LOGO = os.path.dirname(__file__) + '/ul/icons/idle.png'
 
 SOUND_FAILED = "failed"
 SOUND_GRACED = "graced"
@@ -42,8 +42,8 @@ class DisplayText:
         self.font = pygame.font.SysFont(DEFAULT_FONT, self.fontSize, True)
         self.surface = self.font.render(self.text, True, self.color)        
 
-class SoundGeneric(object):
-    """Generic sound driver (used by DisplayGeneric)"""
+class Sound(object):
+    """UL sound driver"""
 
     def __init__(self, config: Dict) -> None:
         self.sounds = {}  # type: pygame.mixer.Sound
@@ -52,7 +52,7 @@ class SoundGeneric(object):
             if sound_config['file'].startswith('/'):
                 file = sound_config['file']
             else:
-                file = SOUNDSDIR + "/" + sound_config['file']
+                file = SOUNDSDIR + "/ul/" + sound_config['file']
             self.sounds[sound_id] = pygame.mixer.Sound(file)
 
     def play_tag(self, tag: str) -> None:
@@ -66,8 +66,8 @@ class SoundGeneric(object):
         self.play_tag(status)
 
 
-class DisplayGeneric(Display):
-    """Generic display driver"""
+class Display(Display):
+    """UL display driver"""
 
     def __init__(self, device: DisplayDevice, config: Dict) -> None:
         self.device = device
@@ -96,7 +96,7 @@ class DisplayGeneric(Display):
         else:
             self.screen = None
         if 'sound' in config:
-            self.sound = SoundGeneric(config['sound'])
+            self.sound = Sound(config['sound'])
             self.sound.play_tag('startup')
         else:
             self.sound = None

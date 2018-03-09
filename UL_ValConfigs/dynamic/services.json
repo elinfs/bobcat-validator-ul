@@ -1,0 +1,13 @@
+[
+	{
+		"id": "dummy",
+		"from": "Trönning",
+		"to": "Erlandsgården",
+		"tickleEnv": [
+			{
+				"pid": "26",
+				"service": "2"
+			}
+		]
+	}
+]

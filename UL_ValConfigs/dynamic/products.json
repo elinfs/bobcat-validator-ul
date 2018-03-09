@@ -1,0 +1,67 @@
+[
+	{
+		"pid": "26",
+		"products": [
+			{
+				"productId": "5a33c82453b4880008f3ba54",
+				"productName": "UL Zon 1",
+				"productLang": "sv"
+			},
+			{
+				"productId": "5a33c82453b4880008f3ba54",
+				"productName": "24 hours in Paris",
+				"productLang": "en"
+			},
+			{
+				"productId": "24h",
+				"productName": "24 heures à Paris",
+				"productLang": "fr"
+			},
+			{
+				"productId": "30d",
+				"productName": "30 dagar i september",
+				"productLang": "sv"
+			},
+			{
+				"productId": "30d",
+				"productName": "30 days in September",
+				"productLang": "en"
+			},
+			{
+				"productId": "30d",
+				"productName": "30 jours en septembre",
+				"productLang": "fr"
+			},
+			{
+				"productId": "ZONE1ADULT30DAYSOFFPEAK",
+				"productName": "Vuxen, centrum, giltig i 30 dagar, dock inte 7-9 vardagar",
+				"productLang": "sv"
+			},
+			{
+				"productId": "ZONE1ADULT30DAYSOFFPEAK",
+				"productName": "Adult, city center, valid for 30 days, but not during 7-9 weekdays",
+				"productLang": "en"
+			},
+			{
+				"productId": "ZONE1ADULT30DAYSOFFPEAK",
+				"productName": "Adulte, Centre-ville, valable 30 jours, mais pas à 7-9 en semaine",
+				"productLang": "fr"
+			},
+			{
+				"productId": "ZONE2ADULT30DAYS",
+				"productName": "Vuxen, förorten, giltig i 30 dagar",
+				"productLang": "sv"
+			},
+			{
+				"productId": "ZONE2ADULT30DAYS",
+				"productName": "Adult, suburbs, valid for 30 days",
+				"productLang": "en"
+			},
+			{
+				"productId": "ZONE2ADULT30DAYS",
+				"productName": "Adulte, banlieue, valable 30 jours",
+				"productLang": "fr"
+			}
+		]
+	}
+]

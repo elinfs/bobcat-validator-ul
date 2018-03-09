@@ -1,0 +1,175 @@
+includes:
+  - examples/conf.d/*.yaml
+
+identification:
+  validator_id: VALIDATOR_ID
+  location: LOCATION
+  sublocation: SUBLOCATION
+
+authentication:
+  entity_id: Null
+  endpoint: https://sogdockbobul-d.westeurope.cloudapp.azure.com:8443/api/v1
+  cert: /var/lib/puppet/ssl/certs/sogkit.val100.bob.ul.se.pem
+  key: /var/lib/puppet/ssl/private_keys/sogkit.val100.bob.ul.se.pem
+
+client:
+  verify: False
+
+validation:
+  language: sv
+  locale_domain: val100
+  pids: [26]
+  online_check: True
+  timeout: 0.200
+  device_signature_timeskew: 30
+  # Check that ticket is valid at next stop
+  validate_next_stop: True
+  events:
+    endpoints:
+      - pid: 26
+        endpoint: https://sogdockbobul-d.westeurope.cloudapp.azure.com:8443/api/v1
+        send_mtb: online_check
+    # maximum life-time for in-memory event queue (seconds)
+    queue_ttl: 30
+    resend_timeout: 30
+    resend_max_timeout: 600
+    send_timeout: 120
+    cache_dir: event_cache
+  blacklists_file: dynamic/blacklists.json
+  ticklemacros_file: dynamic/ticklemacros.json
+  kdk_keyring_file: keyrings/ul_kdk_keyring.json
+  issuer_keyring_file: keyrings/issuer_keyring.json
+  participants_file: dynamic/participants.json
+  products_file: dynamic/products.json
+
+# https://www.python.org/dev/peps/pep-0391/
+logging:
+  version: 1
+  root:
+    handlers:
+      - default
+    level: INFO
+  handlers:
+    default:
+      class: logging.StreamHandler
+      formatter: default
+  formatters:
+    default:
+      format: '%(asctime)s %(name)s %(levelname)s %(message)s'
+
+passback:
+  ttl: 15
+  output:
+    - mqtt_passback
+
+realtime:
+  stopArea_ttl: 300
+  services_file: dynamic/services.json
+  stops_file: dynamic/stops.json
+  mode_of_transport: bus
+
+status:
+ period: 30
+ output:
+    - mqtt_status
+
+status_monitor:
+  exit_grace: 5
+  period: 2
+
+device:
+  mqtt:
+    server: mqtt://127.0.0.1/
+    config:
+      will:
+        topic: /service/v1/Validate/status
+        qos: 0
+        retain: True
+    input:
+      journey:
+        topic: /service/v1/journey
+        format: json
+      last_stop:
+        topic: /service/v1/lastStop
+        format: json
+      next_stop:
+        topic: /service/v1/nextStop
+        format: json
+      gps:
+        topic: /service/v1/gps/rmc
+        format: nmea_string
+      time:
+        topic: /service/v1/Validate/time
+        format: json
+      mtb:
+        topic: /service/v1/Validate/reader
+        format: json
+        output:
+          - mqtt_feedback
+          - mqtt_latest_ticket
+          - display_feedback
+      passback:
+        topic: /service/v1/Validate/passback
+        format: json
+    output:
+      mqtt_feedback:
+        topic: /service/v1/Validate/display
+        format: json
+      mqtt_latest_ticket:
+        topic: /service/v1/Validate/latestticket
+        format: json
+      mqtt_passback:
+        topic: /service/v1/Validate/passback
+        format: json
+      mqtt_status:
+        topic: /service/v1/Validate/status
+        format: json
+        qos: 0
+        retain: True
+  display:
+    #driver: bobcat_validator.display.ul:DisplayUL
+    #driver: bobcat_validator.display.access_is:VAL050
+    #driver: bobcat_validator.display.access_is:VAL100
+    driver: bobcat_validator.display.ul_display:DisplayGeneric
+    driver_config:
+      fullscreen: True
+      screen: yes
+      status:
+        font: "Roboto"
+        size: 22
+      time:
+        size: 20
+      title:
+        size: 20
+      #environment:
+      #  SDL_VIDEODRIVER: fbcon
+      sound:
+        failed:
+          file: "failed.wav"
+        success:
+          file: "success.wav"
+        graced:
+          file: "graced.wav"
+        startup:
+          file: "startup.wav"
+    welcome: "YOLO!"
+    output:
+      display_feedback:
+        feedback_delay: 3.0
+  scanner:
+    driver: bobcat_validator.scanner.access_is.val100:VAL100
+    driver_config:
+      device: /dev/ttyACM0
+      baudrate: 115200
+      illumination_mode: phone_optimized
+    input:
+      mtb:
+        output:
+          - display_feedback
+          - scanner_feedback
+          - mqtt_latest_ticket
+    output:
+      scanner_feedback:
+        feedback_delay: 3.0
+  time:
+    period: 5.0

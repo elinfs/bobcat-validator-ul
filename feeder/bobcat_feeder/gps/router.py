@@ -13,7 +13,7 @@ class Listner:
         self.config = config        
         self.serversocket = None
 
-    def connect(self) -> None:  
+    async def connect(self) -> None:  
         if self.serversocket is None:     
             self.logger.debug("Gps server: " + self.config["server"] + " port: " + str(self.config["port"]))             
             self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

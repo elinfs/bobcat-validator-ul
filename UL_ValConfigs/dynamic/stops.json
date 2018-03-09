@@ -1,0 +1,62 @@
+[
+	{
+		"id": "dummy_stop",
+		"name": "Kapellsjön",
+		"geopos": {
+			"lat": 59.85830195,
+			"long": 17.64173935
+		},
+		"tickleEnv": [
+			{
+				"pid": "26",
+				"stopArea": "7438219",
+				"zone": ["1", "2"]
+			}
+		]
+	},
+	{
+		"id": "2038",
+		"name": "Kapellsjön nedre",
+		"geopos": {
+			"lat": 57.770301,
+			"long": 12.255959
+		},
+		"tickleEnv": [
+			{
+				"pid": "26",
+				"stopArea": "7438220",
+				"zone": "1"
+			}
+		]
+	},
+	{
+		"id": "2039",
+		"name": "Testby",
+		"geopos": {
+			"lat": 57.690351,
+			"long": 12.235959
+		},
+		"tickleEnv": [
+			{
+				"pid": "26",
+				"stopArea": "7438221",
+				"zone": "3"
+			}
+		]
+	},
+	{
+		"id": "2040",
+		"name": "Långtbortistan",
+		"geopos": {
+			"lat": 57.5503,
+			"long": 12.2255
+		},
+		"tickleEnv": [
+			{
+				"pid": "26",
+				"stopArea": "7438222",
+				"zone": "2"
+			}
+		]
+	}
+]
