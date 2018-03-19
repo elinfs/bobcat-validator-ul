@@ -16,6 +16,8 @@ from .display_device import DisplayDevice
 RESOLUTION = WIDTH, HEIGHT = 480, 272
 MARGIN = 14
 
+ADULT = 'a'
+
 COLOR_BLACK = 0, 0, 0
 COLOR_WHITE = 255, 255, 255
 COLOR_YELLOW = 241, 200, 0
@@ -29,8 +31,9 @@ DENIED_LOGO = os.path.dirname(__file__) + '/ul/icons/denied.png'
 IDEL_LOGO = os.path.dirname(__file__) + '/ul/icons/idle.png'
 
 SOUND_FAILED = "failed"
-SOUND_GRACED = "graced"
-SOUND_SUCCESS = "success"
+SOUND_GROUP = "group"
+SOUND_ADULT = "adult"
+SOUND_OTHER = "other"
 
 class DisplayText:
     def __init__(self, text: str, fontSize: int=40, offset: int=0, color=COLOR_WHITE) -> None:
@@ -71,8 +74,7 @@ class Display(Display):
 
     def __init__(self, device: DisplayDevice, config: Dict) -> None:
         self.device = device
-        self.config = config        
-        validate_config_schema(config, "display_generic")
+        self.config = config                
         self.domain = device.dispatcher.domain
         self.translation = device.dispatcher.translation
         environment = config.get('environment')
@@ -160,26 +162,34 @@ class Display(Display):
 
     def feedback(self, result: MtbValidateResult) -> None:
         """Emit feedback via display"""
-        self.last_result = result
+        self.last_result = result        
         res = result.best_result
         reason = result.best_reason
         graced = self.device.dispatcher.is_graced_result(res)
         titles = []
+        if result.best_ticket_id:
+            pid = result.best_participant_id
+            ticket = result.ticket_bundle.get_ticket(pid, result.best_ticket_id)
+            md = ticket.get_metadata()
         if self.sound is not None:
-            if res == ValidateResult.success:
-                self.sound.play_status(SOUND_SUCCESS)
-            elif graced:
-                self.sound.play_status(SOUND_SUCCESS)
+            if res == ValidateResult.success or graced:                
+                tickets = result.ticket_bundle.serialize()
+                ticketsInBundle = 0
+                for pid, bundle in tickets.items():
+                    if len(bundle) > ticketsInBundle:
+                        ticketsInBundle = len(bundle)
+                if ticketsInBundle > 1:
+                    self.sound.play_status(SOUND_GROUP)
+                elif result.best_ticket_id and 'tpc' in md and md['tpc']['cat'] is not ADULT:                    
+                    self.sound.play_status(SOUND_OTHER)
+                else:
+                    self.sound.play_status(SOUND_ADULT)
             else:
                 self.sound.play_status(SOUND_FAILED)
         if self.screen:            
-            langs = [self.device.dispatcher.language]
-            if result.best_ticket_id:
-                pid = result.best_participant_id
-                ticket = result.ticket_bundle.get_ticket(pid, result.best_ticket_id)
-                md = ticket.get_metadata()
-                if 'pln' in md:
-                    langs.insert(0, md['pln'])
+            langs = [self.device.dispatcher.language]           
+            if result.best_ticket_id and 'pln' in md:                
+                langs.insert(0, md['pln'])
 
             if res == ValidateResult.success or graced:                                
                 titles.append(DisplayText("Trevlig resa!"))          
